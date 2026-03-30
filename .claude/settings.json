@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/security_scan.py",
+            "timeout": 30,
+            "statusMessage": "AI Security Gate: scanning generated code..."
+          }
+        ]
+      }
+    ]
+  }
+}
