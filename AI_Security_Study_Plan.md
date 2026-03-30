@@ -229,4 +229,81 @@ Three stories you must be able to tell fluently:
 
 ---
 
+## LinkedIn Profile — What to Write
+
+### Profile Headline (120 chars max)
+```
+Senior AI Security Architect & Manager | Building AI Security Programs | LLM · RAG · Agents · MCP
+```
+
+### LinkedIn Summary (About Section)
+
+```
+I build AI security programs — not just policies, but the full operational function.
+
+At OneZero Bank I established the AI security practice from the ground up: defined the domain scope,
+wrote the policies, set the KPIs, and built the security workflows that now protect every LLM-powered
+product in the organization — from our RAG-based conversational AI to agentic systems running on MCP.
+
+My focus is the intersection of traditional AppSec and the emerging AI threat landscape:
+- Prompt injection (direct and indirect) in production agentic systems
+- RAG pipeline security: corpus poisoning, retrieval manipulation, embedding attacks
+- Agentic AI threats: tool poisoning, agent hijacking, MCP attack vectors
+- AI SDLC: embedding security gates from model selection through deployment
+- Securing AI developer tooling: code completion extensions, AI-powered SDLC
+
+I come from 8+ years of security: penetration testing at Ernst & Young, AppSec architecture at eToro
+and Rapyd, and now building the AI security function at a fintech bank. I combine hands-on technical
+depth with the program leadership experience to operate at scale across engineering organizations.
+
+Currently deepening expertise in: NIST AI RMF, MITRE ATLAS, EU AI Act compliance, and MCP security
+research (one of very few practitioners with production MCP security experience).
+
+Open to: Senior AI Security Architect roles, AI red team leadership, and AI security advisory.
+```
+
+### OneZero Bank Experience — LinkedIn Description
+
+```
+🔐 Built OneZero's AI security function from scratch.
+
+When I joined, AI security was an undefined domain. I established it:
+→ Defined the scope, KPIs, policies, and security workflows for all AI products
+→ Secured Ella Chat (RAG-based LLM): prompt injection defenses, RAG corpus integrity,
+  external model integration controls, data handling for financial services compliance
+→ Designed security architecture for MCP implementations: tool poisoning, context injection,
+  and tool call forgery mitigations
+→ Built the AI-Driven SDLC: security gates at every stage from model selection to deployment
+→ Led security review of AI coding extensions adopted by R&D teams
+→ Applied OWASP LLM Top 10, MITRE ATLAS, and NIST AI RMF to production systems
+
+Also leading the broader application security program:
+→ Managing and mentoring a multidisciplinary security team
+→ Embedding AppSec into SDLC across all R&D and product teams
+→ Threat modeling, security reviews, and penetration testing across the bank's full application layer
+→ Reduced security vulnerabilities 40% through structured vulnerability management
+```
+
+### LinkedIn Posts Strategy (1-2x per week)
+
+Start posting before you publish research — build an audience first:
+
+**Week 1-2: Establish your voice**
+- Post 1: "3 years building AI security in a bank — here's what nobody talks about" (lessons learned)
+- Post 2: Short thread on the biggest misconception about prompt injection
+
+**Week 3-4: Technical insights (short form)**
+- "The difference between direct and indirect prompt injection — and why indirect is scarier"
+- "MCP (Model Context Protocol) introduced a new attack surface most teams haven't thought about"
+
+**Week 5-6: Program building perspective (your differentiator)**
+- "How to build an AI security program from zero — what I did at OneZero"
+- "OWASP LLM Top 10 is a list. Here's how to turn it into a program"
+
+**Ongoing: React + comment strategy**
+- Comment on AI security posts by Lakera, OWASP, MITRE, Nvidia AI posts with substantive insights
+- This builds visibility faster than original posts alone
+
+---
+
 *Track progress by checking off items above. Revisit and update this plan monthly.*
