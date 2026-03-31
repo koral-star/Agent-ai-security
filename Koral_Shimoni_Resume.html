@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Koral Shimoni — Resume</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 11px;
+      color: #1a1a2e;
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      padding: 30px 20px;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      background: #fff;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.15);
+      display: grid;
+      grid-template-columns: 68mm 1fr;
+    }
+
+    /* ── LEFT SIDEBAR ── */
+    .sidebar {
+      background: #0f2d48;
+      color: #e8f0f7;
+      padding: 32px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .name-block h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.2;
+      letter-spacing: 0.5px;
+    }
+
+    .name-block .title {
+      font-size: 10px;
+      color: #5bc8f5;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 6px;
+    }
+
+    .divider {
+      height: 2px;
+      background: linear-gradient(90deg, #5bc8f5, transparent);
+      border-radius: 2px;
+    }
+
+    .sidebar-section h3 {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #5bc8f5;
+      margin-bottom: 10px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 7px;
+      font-size: 10px;
+      color: #c8daea;
+    }
+
+    .contact-item .icon {
+      color: #5bc8f5;
+      font-size: 11px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .skill-group {
+      margin-bottom: 10px;
+    }
+
+    .skill-group .label {
+      font-size: 9px;
+      font-weight: 700;
+      color: #5bc8f5;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+    }
+
+    .tag {
+      background: rgba(91,200,245,0.12);
+      border: 1px solid rgba(91,200,245,0.3);
+      color: #c8daea;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 9px;
+    }
+
+    .tag.highlight {
+      background: rgba(91,200,245,0.25);
+      border-color: rgba(91,200,245,0.5);
+      color: #e8f4fd;
+      font-weight: 600;
+    }
+
+    .edu-item .school {
+      font-weight: 700;
+      color: #e8f0f7;
+      font-size: 10px;
+    }
+    .edu-item .degree {
+      color: #c8daea;
+      font-size: 9.5px;
+    }
+    .edu-item .year {
+      color: #5bc8f5;
+      font-size: 9px;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .main {
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .summary {
+      font-size: 10.5px;
+      line-height: 1.6;
+      color: #3a4a5c;
+      border-left: 3px solid #5bc8f5;
+      padding-left: 12px;
+    }
+
+    .section h2 {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #0f2d48;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #e8f0f7;
+      margin-bottom: 12px;
+    }
+
+    .section h2 span {
+      display: inline-block;
+      width: 18px;
+      height: 2px;
+      background: #5bc8f5;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    .job {
+      margin-bottom: 14px;
+    }
+
+    .job:last-child { margin-bottom: 0; }
+
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 2px;
+    }
+
+    .job-title {
+      font-weight: 700;
+      font-size: 11px;
+      color: #0f2d48;
+    }
+
+    .job-date {
+      font-size: 9.5px;
+      color: #5bc8f5;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .job-company {
+      font-size: 10px;
+      color: #5a7fa0;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .job ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .job ul li {
+      position: relative;
+      padding-left: 12px;
+      margin-bottom: 4px;
+      font-size: 10px;
+      line-height: 1.5;
+      color: #3a4a5c;
+    }
+
+    .job ul li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: #5bc8f5;
+      font-size: 9px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #e8f4fd;
+      color: #0f6fa0;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 8.5px;
+      font-weight: 700;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media print {
+      body { background: none; padding: 0; }
+      .page { box-shadow: none; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ════ SIDEBAR ════ -->
+  <aside class="sidebar">
+    <div class="name-block">
+      <h1>Koral<br/>Shimoni</h1>
+      <div class="title">Sr. AI Security Architect</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="sidebar-section">
+      <h3>Contact</h3>
+      <div class="contact-item">
+        <span class="icon">✆</span>
+        <span>+972-50-5292860</span>
+      </div>
+      <div class="contact-item">
+        <span class="icon">✉</span>
+        <span>koral.s930720@gmail.com</span>
+      </div>
+      <div class="contact-item">
+        <span class="icon">in</span>
+        <span>linkedin.com/in/koral-shimoni</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="sidebar-section">
+      <h3>AI Security</h3>
+      <div class="skill-group">
+        <div class="skill-tags">
+          <span class="tag highlight">Prompt Injection</span>
+          <span class="tag highlight">MCP Security</span>
+          <span class="tag highlight">RAG Security</span>
+          <span class="tag highlight">Agentic AI</span>
+          <span class="tag">Tool Poisoning</span>
+          <span class="tag">LLM Red Team</span>
+          <span class="tag">AI SDLC</span>
+          <span class="tag">OWASP LLM Top10</span>
+          <span class="tag">MITRE ATLAS</span>
+          <span class="tag">NIST AI RMF</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>AppSec & Cloud</h3>
+      <div class="skill-tags">
+        <span class="tag">Threat Modeling</span>
+        <span class="tag">Penetration Testing</span>
+        <span class="tag">Secure SDLC</span>
+        <span class="tag">DevSecOps</span>
+        <span class="tag">AWS · Azure</span>
+        <span class="tag">Burp Suite</span>
+        <span class="tag">Snyk · CyCode</span>
+        <span class="tag">Python · JS</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="sidebar-section">
+      <h3>Education</h3>
+      <div class="edu-item">
+        <div class="school">HIT — Holon Institute</div>
+        <div class="degree">B.Sc. Computer Science</div>
+        <div class="year">2014 – 2017</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ════ MAIN ════ -->
+  <main class="main">
+
+    <div class="summary">
+      Senior AI Security Architect with <strong>8+ years</strong> in cybersecurity and <strong>3+ years</strong>
+      building enterprise AI security programs. Founded OneZero Bank's AI security function from zero —
+      defining the domain, KPIs, policies, and frameworks that protect all LLM-powered products.
+      Deep hands-on expertise in prompt injection, RAG security, agentic AI threats, and MCP security.
+    </div>
+
+    <div class="section">
+      <h2><span></span>Experience</h2>
+
+      <div class="job">
+        <div class="job-header">
+          <div class="job-title">AI Security & AppSec Manager</div>
+          <div class="job-date">2022 – Present</div>
+        </div>
+        <div class="job-company">One Zero Bank</div>
+        <ul>
+          <li><strong>Founded the AI security function from scratch</strong> — defined domain scope, KPIs, policies, and security workflows covering all LLM products <span class="badge">Program Builder</span></li>
+          <li>Secured <strong>Ella Chat</strong> (production RAG + LLM): prompt injection defenses, RAG corpus integrity, external model integration controls, financial-grade data handling</li>
+          <li>Designed security architecture for <strong>MCP implementations</strong>: tool poisoning, context injection, and tool call forgery mitigations <span class="badge">Unique</span></li>
+          <li>Built <strong>AI-Driven SDLC</strong>: security gates from model selection → deployment; led security review of AI coding extensions for R&D</li>
+          <li>Led multidisciplinary team; reduced vulnerabilities <strong>40%</strong> through structured AppSec program across all R&D and product teams</li>
+        </ul>
+      </div>
+
+      <div class="two-col">
+        <div class="job">
+          <div class="job-header">
+            <div class="job-title">AppSec Architect</div>
+            <div class="job-date">2020 – 2022</div>
+          </div>
+          <div class="job-company">eToro &amp; Rapyd</div>
+          <ul>
+            <li>Security design review &amp; threat modeling at SDLC level with R&amp;D teams</li>
+            <li>Web, API &amp; mobile penetration testing; bug bounty program management</li>
+          </ul>
+        </div>
+
+        <div class="job">
+          <div class="job-header">
+            <div class="job-title">Penetration Tester &amp; Consultant</div>
+            <div class="job-date">2017 – 2020</div>
+          </div>
+          <div class="job-company">Ernst &amp; Young</div>
+          <ul>
+            <li>Risk assessments, threat modeling &amp; pen testing for enterprise clients across banking, fintech, healthcare</li>
+            <li>Vulnerability reports with business impact analysis for C-level stakeholders</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2><span></span>Key Achievements</h2>
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+        <div style="background:#f0f8ff; border-left:3px solid #5bc8f5; padding:8px 10px; border-radius:0 4px 4px 0;">
+          <div style="font-size:18px; font-weight:800; color:#0f2d48;">40%</div>
+          <div style="font-size:9px; color:#5a7fa0;">Vulnerability reduction at OneZero through structured AppSec program</div>
+        </div>
+        <div style="background:#f0f8ff; border-left:3px solid #5bc8f5; padding:8px 10px; border-radius:0 4px 4px 0;">
+          <div style="font-size:18px; font-weight:800; color:#0f2d48;">0→1</div>
+          <div style="font-size:9px; color:#5a7fa0;">Built AI security program from ground up — first at the organization</div>
+        </div>
+        <div style="background:#f0f8ff; border-left:3px solid #5bc8f5; padding:8px 10px; border-radius:0 4px 4px 0;">
+          <div style="font-size:18px; font-weight:800; color:#0f2d48;">8 yrs</div>
+          <div style="font-size:9px; color:#5a7fa0;">Security experience across EY, fintech scale-ups, and banking</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+</div>
+</body>
+</html>
