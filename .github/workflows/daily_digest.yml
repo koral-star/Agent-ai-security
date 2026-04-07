@@ -1,0 +1,32 @@
+name: Daily AI Security Digest
+
+on:
+  schedule:
+    - cron: '0 7 * * *'  # Every day at 7:00 AM UTC
+  workflow_dispatch:       # Allow manual trigger anytime
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run digest script
+        run: python3 daily_digest.py
+
+      - name: Commit and push digest
+        run: |
+          git config user.name "AI Security Digest Bot"
+          git config user.email "digest-bot@koral-shimoni.ai"
+          git add digests/
+          git diff --staged --quiet || git commit -m "Daily AI Security Digest $(date +'%Y-%m-%d')"
+          git push
