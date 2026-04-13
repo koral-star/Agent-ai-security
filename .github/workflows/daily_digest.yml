@@ -6,7 +6,7 @@ on:
   workflow_dispatch:       # Allow manual trigger anytime
 
 permissions:
-  contents: write          # Required to commit and push digest files
+  contents: write
 
 jobs:
   digest:
@@ -25,6 +25,31 @@ jobs:
 
       - name: Run digest script
         run: python3 daily_digest.py
+
+      - name: Read digest content
+        id: digest
+        run: |
+          DATE=$(date +'%Y-%m-%d')
+          CONTENT=$(cat digests/$DATE.md)
+          # Truncate to 50000 chars for email safety
+          echo "content<<EOF" >> $GITHUB_OUTPUT
+          echo "${CONTENT:0:50000}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "date=$DATE" >> $GITHUB_OUTPUT
+
+      - name: Send digest by email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.GMAIL_USER }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: "AI Security Digest — ${{ steps.digest.outputs.date }}"
+          to: koral.s930720@gmail.com
+          from: AI Security Digest <${{ secrets.GMAIL_USER }}>
+          body: ${{ steps.digest.outputs.content }}
+          content_type: text/plain
 
       - name: Commit and push digest
         run: |
