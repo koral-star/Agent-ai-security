@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   digest:
@@ -30,26 +31,25 @@ jobs:
         id: digest
         run: |
           DATE=$(date +'%Y-%m-%d')
-          CONTENT=$(cat digests/$DATE.md)
-          # Truncate to 50000 chars for email safety
-          echo "content<<EOF" >> $GITHUB_OUTPUT
-          echo "${CONTENT:0:50000}" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
           echo "date=$DATE" >> $GITHUB_OUTPUT
+          # Store content in a file to avoid shell escaping issues
+          cp digests/$DATE.md /tmp/digest_content.md
 
-      - name: Send digest by email
-        uses: dawidd6/action-send-mail@v3
+      - name: Create GitHub Issue with digest
+        uses: actions/github-script@v7
         with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          secure: true
-          username: ${{ secrets.GMAIL_USER }}
-          password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: "AI Security Digest — ${{ steps.digest.outputs.date }}"
-          to: koral.s930720@gmail.com
-          from: AI Security Digest <${{ secrets.GMAIL_USER }}>
-          body: ${{ steps.digest.outputs.content }}
-          content_type: text/plain
+          script: |
+            const fs = require('fs');
+            const content = fs.readFileSync('/tmp/digest_content.md', 'utf8');
+            const date = '${{ steps.digest.outputs.date }}';
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🔐 AI Security Digest — ${date}`,
+              body: content,
+              labels: ['digest']
+            });
 
       - name: Commit and push digest
         run: |
