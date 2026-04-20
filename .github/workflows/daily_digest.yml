@@ -37,13 +37,12 @@ jobs:
           DATE=$(date +'%Y-%m-%d')
           echo "date=$DATE" >> $GITHUB_OUTPUT
           cp digests/$DATE.md /tmp/digest_content.md
-          # Create short summary for push notification (first 4000 chars)
-          head -c 4000 /tmp/digest_content.md > /tmp/digest_short.md
+          cp digests/${DATE}_ntfy.txt /tmp/ntfy_summary.txt
 
       - name: Send push notification via ntfy.sh
         run: |
           DATE=$(date +'%Y-%m-%d')
-          CONTENT=$(cat /tmp/digest_short.md)
+          CONTENT=$(cat /tmp/ntfy_summary.txt)
           curl -s \
             -H "Title: 🔐 AI Security Digest — $DATE" \
             -H "Priority: default" \

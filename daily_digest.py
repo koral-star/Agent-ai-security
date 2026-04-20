@@ -389,6 +389,27 @@ def build_html_presentation(source_data, date):
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
+def build_ntfy_summary(source_data, today):
+    lines = [f"🔐 AI Security — {today}\n"]
+    for source_name, config, data in source_data:
+        if not data or (isinstance(data, str) and data.startswith("ERROR")):
+            continue
+        icon = config["icon"]
+        if config["type"] == "arxiv":
+            items = parse_arxiv(data)
+            titles = [p["title"][:70] for p in items[:2]]
+        elif config["type"] == "hn_api":
+            items = parse_hn(data)
+            titles = [s["title"][:70] for s in items[:2]]
+        else:
+            titles = parse_html_headlines(data)[:2]
+        if titles:
+            lines.append(f"{icon} {source_name.split('—')[-1].strip() if '—' in source_name else source_name}:")
+            for t in titles:
+                lines.append(f"  · {t}")
+    lines.append("\n→ Full digest in GitHub Issues")
+    return "\n".join(lines)
+
 def build_digest():
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     source_data = []
@@ -402,19 +423,23 @@ def build_digest():
         if data.startswith("ERROR"):
             md_lines.append(f"> {data}\n")
 
-    return today, "\n".join(md_lines), build_html_presentation(source_data, today)
+    ntfy_summary = build_ntfy_summary(source_data, today)
+    return today, "\n".join(md_lines), build_html_presentation(source_data, today), ntfy_summary
 
 if __name__ == "__main__":
     print("Building AI Security Daily Digest...")
-    today, md_content, html_content = build_digest()
+    today, md_content, html_content, ntfy_summary = build_digest()
 
     md_file = OUTPUT_DIR / f"{today}.md"
     html_file = OUTPUT_DIR / f"{today}.html"
+    ntfy_file = OUTPUT_DIR / f"{today}_ntfy.txt"
 
     md_file.write_text(md_content, encoding="utf-8")
     html_file.write_text(html_content, encoding="utf-8")
+    ntfy_file.write_text(ntfy_summary, encoding="utf-8")
 
     print(f"\n✅ Digest saved:")
     print(f"   Markdown:     {md_file}")
     print(f"   Presentation: {html_file}")
+    print(f"   Notification: {ntfy_file}")
     print(f"\nOpen the HTML in Chrome → File → Print → Save as PDF → Upload to LinkedIn")
