@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: '0 4 * * *'  # Every day at 7:00 AM Israel time (UTC+3)
   workflow_dispatch:       # Allow manual trigger anytime
+  push:
+    branches:
+      - main
+      - claude/add-claude-documentation-B8KFd
 
 permissions:
   contents: write
