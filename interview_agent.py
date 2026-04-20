@@ -258,14 +258,35 @@ def save_transcript(messages: list) -> str:
     return str(path)
 
 
-def stream_response(client: anthropic.Anthropic, messages: list) -> str:
+# Pricing per 1M tokens (input / cache-read / output)
+MODEL_PRICING = {
+    "claude-haiku-4-5":  (1.00, 0.10, 5.00),
+    "claude-sonnet-4-6": (3.00, 0.30, 15.00),
+    "claude-opus-4-7":   (5.00, 0.50, 25.00),
+}
+
+# Friendly aliases accepted on the CLI
+MODEL_ALIASES = {
+    "haiku":  "claude-haiku-4-5",
+    "sonnet": "claude-sonnet-4-6",
+    "opus":   "claude-opus-4-7",
+}
+
+
+def stream_response(
+    client: anthropic.Anthropic,
+    messages: list,
+    model: str,
+    usage_totals: dict,
+) -> str:
     full_response = ""
 
-    # Cache the stable system prompt; use top-level cache_control for growing conversation
+    # Opus 4.7 supports adaptive thinking; Sonnet/Haiku do not
+    extra = {"thinking": {"type": "adaptive"}} if model == "claude-opus-4-7" else {}
+
     with client.messages.stream(
-        model="claude-opus-4-7",
-        max_tokens=4096,
-        thinking={"type": "adaptive"},
+        model=model,
+        max_tokens=2048,
         system=[
             {
                 "type": "text",
@@ -275,6 +296,7 @@ def stream_response(client: anthropic.Anthropic, messages: list) -> str:
         ],
         messages=messages,
         cache_control={"type": "ephemeral"},
+        **extra,
     ) as stream:
         for event in stream:
             if event.type == "content_block_delta":
@@ -282,25 +304,57 @@ def stream_response(client: anthropic.Anthropic, messages: list) -> str:
                     print(event.delta.text, end="", flush=True)
                     full_response += event.delta.text
 
-    print()  # newline after streaming ends
+        # Accumulate token usage for cost display
+        final = stream.get_final_message()
+        u = final.usage
+        usage_totals["input"]        += getattr(u, "input_tokens", 0)
+        usage_totals["cache_write"]  += getattr(u, "cache_creation_input_tokens", 0)
+        usage_totals["cache_read"]   += getattr(u, "cache_read_input_tokens", 0)
+        usage_totals["output"]       += getattr(u, "output_tokens", 0)
+
+    print()
     return full_response
+
+
+def print_cost_summary(model: str, usage: dict) -> None:
+    ip, crp, op = MODEL_PRICING.get(model, (5.00, 0.50, 25.00))
+    cost = (
+        usage["input"]       * ip  / 1_000_000
+        + usage["cache_write"] * ip * 1.25 / 1_000_000
+        + usage["cache_read"]  * crp / 1_000_000
+        + usage["output"]      * op  / 1_000_000
+    )
+    total_tokens = sum(usage.values())
+    print(
+        f"\n💰 Session cost: ${cost:.4f}  "
+        f"({total_tokens:,} tokens — "
+        f"in:{usage['input']:,}  "
+        f"cached:{usage['cache_read']:,}  "
+        f"out:{usage['output']:,})"
+    )
 
 
 # ── Main Loop ─────────────────────────────────────────────────────────────────
 
-def run(mode: str | None = None):
+def run(mode: str | None = None, model_alias: str = "haiku"):
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         print("Error: ANTHROPIC_API_KEY environment variable not set.")
         sys.exit(1)
 
+    model = MODEL_ALIASES.get(model_alias, model_alias)
+    if model not in MODEL_PRICING:
+        print(f"Error: unknown model '{model_alias}'. Use: haiku, sonnet, or opus.")
+        sys.exit(1)
+
     client = anthropic.Anthropic(api_key=api_key)
     messages: list = []
+    usage_totals = {"input": 0, "cache_write": 0, "cache_read": 0, "output": 0}
 
     print()
     print("=" * 62)
     print("  AI SECURITY DAILY INTERVIEW AGENT")
-    print("  Powered by Claude Opus 4.7 — Adaptive Thinking")
+    print(f"  Model: {model}")
     print("=" * 62)
     print("  Commands: 'quit' / 'exit' to end  |  'save' to save now")
     print("=" * 62)
@@ -310,7 +364,7 @@ def run(mode: str | None = None):
     opening = get_opening_message(mode)
     messages.append({"role": "user", "content": opening})
     print("Interviewer:\n")
-    response = stream_response(client, messages)
+    response = stream_response(client, messages, model, usage_totals)
     messages.append({"role": "assistant", "content": response})
 
     while True:
@@ -333,7 +387,7 @@ def run(mode: str | None = None):
                     "and next session preview."
                 ),
             })
-            closing = stream_response(client, messages)
+            closing = stream_response(client, messages, model, usage_totals)
             messages.append({"role": "assistant", "content": closing})
             break
 
@@ -344,11 +398,12 @@ def run(mode: str | None = None):
 
         messages.append({"role": "user", "content": user_input})
         print("\nInterviewer:\n")
-        response = stream_response(client, messages)
+        response = stream_response(client, messages, model, usage_totals)
         messages.append({"role": "assistant", "content": response})
 
+    print_cost_summary(model, usage_totals)
     path = save_transcript(messages)
-    print(f"\n[Full transcript saved → {path}]")
+    print(f"[Full transcript saved → {path}]")
     print("Session complete. Keep sharpening that edge.\n")
 
 
@@ -364,10 +419,15 @@ modes:
   deep     30-minute deep dive (2-3 scenarios)
   events   15-minute current events debrief
 
+models (cost per daily year):
+  haiku    claude-haiku-4-5   ~$12-18/yr   [DEFAULT]
+  sonnet   claude-sonnet-4-6  ~$36-55/yr
+  opus     claude-opus-4-7    ~$110-220/yr
+
 examples:
   python3 interview_agent.py
   python3 interview_agent.py --mode rapid
-  python3 interview_agent.py --mode deep
+  python3 interview_agent.py --mode deep --model sonnet
         """,
     )
     parser.add_argument(
@@ -376,8 +436,14 @@ examples:
         default=None,
         help="Interview mode (default: agent asks you)",
     )
+    parser.add_argument(
+        "--model",
+        choices=["haiku", "sonnet", "opus"],
+        default="haiku",
+        help="Model to use — haiku is cheapest (default: haiku)",
+    )
     args = parser.parse_args()
-    run(args.mode)
+    run(args.mode, args.model)
 
 
 if __name__ == "__main__":
