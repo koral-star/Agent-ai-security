@@ -1,0 +1,25 @@
+🔐 AI Security — 2026-04-20
+
+📄 AI Security Papers:
+  · Showing 1&ndash;50 of 2,152 results for all: prompt injection OR LLM s
+  · Integrating Graphs, Large Language Models, and Agents
+🤖 MCP & Agent Security:
+  · Showing 1&ndash;12 of 12 results for all: model context protocol secur
+  · SuperLocalMemory: Privacy-Preserving Multi-Agent
+🛡️ OWASP GenAI:
+  · Join us in London, 6/2 &#8211; 6/4 InfoSecurity Europe &#8211; OWASP GenAI and Agentic Security Summit
+  · OWASP GenAI Security Project
+🔬 Anthropic Safety:
+  · Interpretability
+  · Societal Impacts
+🧠 Google DeepMind Safety:
+  · Explore our next generation AI systems
+  · Our latest AI breakthroughs and updates from the lab
+🔥 AI Security:
+  · Show HN: Golf Scanner – OSS tool to find and audit every MCP server
+  · Show HN: SiteIQ – LLM and Web security testing tool (built by a high s
+🕵️ Agentic AI:
+  · Show HN: G0 – The control layer for AI agents (scan, test, monitor, co
+  · Show HN: AgentArmor – open-source 8-layer security framework for AI ag
+
+→ Full digest in GitHub Issues
