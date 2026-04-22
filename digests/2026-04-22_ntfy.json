@@ -1,30 +1,74 @@
 [
   {
     "title": "📄 arXiv — AI Security Papers",
-    "body": "Showing 1&ndash;50 of 2,169 results for all: prompt injection OR LLM security OR…\n\nBeyond Semantic Similarity: A Component-Wise Evaluation Framework for Medical Qu…\n\nThe Rise of Verbal Tics in Large Language Models: A Systematic Analysis Across F…"
+    "body": "Showing 1&ndash;50 of 2,169 results for all: prompt injection OR LLM security OR agentic AI security OR RAG security OR adversarial LLM\n\nThe use of Large Language Models…"
+  },
+  {
+    "title": "📄 arXiv — AI Security Papers",
+    "body": "Beyond Semantic Similarity: A Component-Wise Evaluation Framework for Medical Question Answering Systems with Health Equity Implications\n      \n    \n    \n      Authors:\n\nAs Large Language Models…"
+  },
+  {
+    "title": "📄 arXiv — AI Security Papers",
+    "body": "The Rise of Verbal Tics in Large Language Models: A Systematic Analysis Across Frontier Models\n      \n    \n    \n      Authors:\n\nWhile Large Language Models…"
   },
   {
     "title": "🤖 arXiv — MCP & Agent Security",
-    "body": "Showing 1&ndash;12 of 12 results for all: model context protocol security OR age…\n\nSuperLocalMemory: Privacy-Preserving Multi-Agent\n\nSMCP: Secure"
+    "body": "Showing 1&ndash;12 of 12 results for all: model context protocol security OR agentic AI attack OR tool poisoning\n\nThe…"
+  },
+  {
+    "title": "🤖 arXiv — MCP & Agent Security",
+    "body": "SuperLocalMemory: Privacy-Preserving Multi-Agent\n\nAgentic…"
+  },
+  {
+    "title": "🤖 arXiv — MCP & Agent Security",
+    "body": "SMCP: Secure\n\nThe proliferation of…"
   },
   {
     "title": "🛡️ OWASP GenAI",
-    "body": "Join us in London, 6/2 &#8211; 6/4 InfoSecurity Europe &#8211; OWASP GenAI and A…\nOWASP GenAI Security Project\nAI Security Solutions Landscape For AI and Agentic Red Teaming Q2 2026\n\nhttps://genai.owasp.org"
+    "body": "Join us in London, 6/2 &#8211; 6/4 InfoSecurity Europe &#8211; OWASP GenAI and Agentic Security Summit\n\nhttps://genai.owasp.org"
+  },
+  {
+    "title": "🛡️ OWASP GenAI",
+    "body": "OWASP GenAI Security Project\n\nhttps://genai.owasp.org"
   },
   {
     "title": "🔬 Anthropic Safety",
-    "body": "Interpretability\nSocietal Impacts\nFrontier Red Team\n\nhttps://www.anthropic.com/research"
+    "body": "Interpretability\n\nhttps://www.anthropic.com/research"
+  },
+  {
+    "title": "🔬 Anthropic Safety",
+    "body": "Societal Impacts\n\nhttps://www.anthropic.com/research"
   },
   {
     "title": "🧠 Google DeepMind Safety",
-    "body": "Explore our next generation AI systems\nOur latest AI breakthroughs and updates from the lab\nUnlocking a new era of discovery with AI\n\nhttps://deepmind.google/research/publications/"
+    "body": "Explore our next generation AI systems\n\nhttps://deepmind.google/research/publications/"
+  },
+  {
+    "title": "🧠 Google DeepMind Safety",
+    "body": "Our latest AI breakthroughs and updates from the lab\n\nhttps://deepmind.google/research/publications/"
   },
   {
     "title": "🔥 HackerNews — AI Security",
-    "body": "Show HN: Golf Scanner – OSS tool to find and audit every MCP server (3 pts)\nhttps://github.com/golf-mcp/golf-scanner\n\nShow HN: SiteIQ – LLM and Web security testing tool (built by a high schooler) (4 pts)\nhttps://github.com/sastrophy/siteiq\n\nShow HN: AgentArmor – open-source 8-layer security framework for AI agents (10 pts)\nhttps://github.com/Agastya910/agentarmor"
+    "body": "Show HN: Golf Scanner – OSS tool to find and audit every MCP server\n\n🔥 3 points on Hacker News\n\nhttps://github.com/golf-mcp/golf-scanner"
+  },
+  {
+    "title": "🔥 HackerNews — AI Security",
+    "body": "Show HN: SiteIQ – LLM and Web security testing tool (built by a high schooler)\n\n🔥 4 points on Hacker News\n\nhttps://github.com/sastrophy/siteiq"
+  },
+  {
+    "title": "🔥 HackerNews — AI Security",
+    "body": "Show HN: AgentArmor – open-source 8-layer security framework for AI agents\n\n🔥 10 points on Hacker News\n\nhttps://github.com/Agastya910/agentarmor"
   },
   {
     "title": "🕵️ HackerNews — Agentic AI",
-    "body": "Show HN: G0 – The control layer for AI agents (scan, test, monitor, comply) (4 pts)\nhttps://github.com/guard0-ai/g0\n\nShow HN: AgentArmor – open-source 8-layer security framework for AI agents (10 pts)\nhttps://github.com/Agastya910/agentarmor\n\nShow HN: Agentic Trust – Enterprise MCP Server Platform for Secure AI Agents (4 pts)\nhttps://agentictrust.com"
+    "body": "Show HN: G0 – The control layer for AI agents (scan, test, monitor, comply)\n\n🔥 4 points on Hacker News\n\nhttps://github.com/guard0-ai/g0"
+  },
+  {
+    "title": "🕵️ HackerNews — Agentic AI",
+    "body": "Show HN: AgentArmor – open-source 8-layer security framework for AI agents\n\n🔥 10 points on Hacker News\n\nhttps://github.com/Agastya910/agentarmor"
+  },
+  {
+    "title": "🕵️ HackerNews — Agentic AI",
+    "body": "Show HN: Agentic Trust – Enterprise MCP Server Platform for Secure AI Agents\n\n🔥 4 points on Hacker News\n\nhttps://agentictrust.com"
   }
 ]
