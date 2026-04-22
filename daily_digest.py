@@ -59,6 +59,11 @@ SOURCES = {
         "type": "hn_api",
         "icon": "🕵️",
     },
+    "The Weather Report — AI": {
+        "url": "https://theweatherreport.ai",
+        "type": "html",
+        "icon": "🌐",
+    },
 }
 
 # ── Fetchers ──────────────────────────────────────────────────────────────────
