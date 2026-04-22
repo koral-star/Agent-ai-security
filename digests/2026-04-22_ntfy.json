@@ -25,19 +25,19 @@
   },
   {
     "title": "🛡️ OWASP GenAI",
-    "body": "Join us in London, 6/2 &#8211; 6/4 InfoSecurity Europe &#8211; OWASP GenAI and Agentic Security Summit\n\nhttps://genai.owasp.org"
+    "body": "OWASP GenAI Security Project\n\nA global community-driven and expert led initiative to create freely available open source guidance and resources for understanding and mitigating security and safety concerns for Generative AI  applications and adoption.\n\nhttps://genai.owasp.org"
   },
   {
     "title": "🛡️ OWASP GenAI",
-    "body": "OWASP GenAI Security Project\n\nhttps://genai.owasp.org"
+    "body": "AI Security Solutions Landscape For AI and Agentic Red Teaming Q2 2026\n\nhttps://genai.owasp.org"
   },
   {
     "title": "🔬 Anthropic Safety",
-    "body": "Interpretability\n\nhttps://www.anthropic.com/research"
+    "body": "Interpretability\n\nThe mission of the Interpretability team is to discover and understand how large language models work internally, as a foundation for AI safety and positive outcomes.\n\nhttps://www.anthropic.com/research"
   },
   {
     "title": "🔬 Anthropic Safety",
-    "body": "Societal Impacts\n\nhttps://www.anthropic.com/research"
+    "body": "Societal Impacts\n\nWorking closely with the Anthropic Policy and Safeguards teams, Societal Impacts is a technical research team that explores how AI is used in the real world.\n\nhttps://www.anthropic.com/research"
   },
   {
     "title": "🧠 Google DeepMind Safety",
@@ -77,6 +77,6 @@
   },
   {
     "title": "🌐 The Weather Report — AI",
-    "body": "What Claude and GPT actually did in the Mexico government breach\n\nhttps://theweatherreport.ai"
+    "body": "What Claude and GPT actually did in the Mexico government breach\n\nA rare look inside an AI-driven cyber campaign. One operator used Claude Code and GPT-4.1 to breach 9 Mexican government agencies in 7 weeks. Claude generated about 75 percent of the remote commands. GPT-4.1 triaged 305 compromised SAT servers…\n\nhttps://theweatherreport.ai"
   }
 ]
