@@ -389,26 +389,39 @@ def build_html_presentation(source_data, date):
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
-def build_ntfy_summary(source_data, today):
-    lines = [f"🔐 AI Security — {today}\n"]
+def build_ntfy_notifications(source_data):
+    """Return list of {title, body} dicts — one per source, each with URLs."""
+    notifications = []
     for source_name, config, data in source_data:
         if not data or (isinstance(data, str) and data.startswith("ERROR")):
             continue
         icon = config["icon"]
+        lines = []
         if config["type"] == "arxiv":
-            items = parse_arxiv(data)
-            titles = [p["title"][:70] for p in items[:2]]
+            for p in parse_arxiv(data)[:3]:
+                t = p["title"][:80] + ("…" if len(p["title"]) > 80 else "")
+                lines.append(t)
+                if p["link"]:
+                    lines.append(p["link"])
+                lines.append("")
         elif config["type"] == "hn_api":
-            items = parse_hn(data)
-            titles = [s["title"][:70] for s in items[:2]]
+            for s in parse_hn(data)[:3]:
+                t = s["title"][:80] + ("…" if len(s["title"]) > 80 else "")
+                lines.append(f"{t} ({s['points']} pts)")
+                if s["link"]:
+                    lines.append(s["link"])
+                lines.append("")
         else:
-            titles = parse_html_headlines(data)[:2]
-        if titles:
-            lines.append(f"{icon} {source_name.split('—')[-1].strip() if '—' in source_name else source_name}:")
-            for t in titles:
-                lines.append(f"  · {t}")
-    lines.append("\n→ Full digest in GitHub Issues")
-    return "\n".join(lines)
+            headlines = parse_html_headlines(data)[:3]
+            for h in headlines:
+                lines.append(h[:80] + ("…" if len(h) > 80 else ""))
+            if config["url"]:
+                lines.append("")
+                lines.append(config["url"])
+        body = "\n".join(lines).strip()
+        if body:
+            notifications.append({"title": f"{icon} {source_name}", "body": body})
+    return notifications
 
 def build_digest():
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -423,23 +436,23 @@ def build_digest():
         if data.startswith("ERROR"):
             md_lines.append(f"> {data}\n")
 
-    ntfy_summary = build_ntfy_summary(source_data, today)
-    return today, "\n".join(md_lines), build_html_presentation(source_data, today), ntfy_summary
+    ntfy_notifications = build_ntfy_notifications(source_data)
+    return today, "\n".join(md_lines), build_html_presentation(source_data, today), ntfy_notifications
 
 if __name__ == "__main__":
     print("Building AI Security Daily Digest...")
-    today, md_content, html_content, ntfy_summary = build_digest()
+    today, md_content, html_content, ntfy_notifications = build_digest()
 
     md_file = OUTPUT_DIR / f"{today}.md"
     html_file = OUTPUT_DIR / f"{today}.html"
-    ntfy_file = OUTPUT_DIR / f"{today}_ntfy.txt"
+    ntfy_file = OUTPUT_DIR / f"{today}_ntfy.json"
 
     md_file.write_text(md_content, encoding="utf-8")
     html_file.write_text(html_content, encoding="utf-8")
-    ntfy_file.write_text(ntfy_summary, encoding="utf-8")
+    ntfy_file.write_text(json.dumps(ntfy_notifications, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(f"\n✅ Digest saved:")
     print(f"   Markdown:     {md_file}")
     print(f"   Presentation: {html_file}")
-    print(f"   Notification: {ntfy_file}")
+    print(f"   Notifications: {ntfy_file}")
     print(f"\nOpen the HTML in Chrome → File → Print → Save as PDF → Upload to LinkedIn")

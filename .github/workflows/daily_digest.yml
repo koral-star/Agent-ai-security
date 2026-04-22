@@ -37,18 +37,22 @@ jobs:
           DATE=$(date +'%Y-%m-%d')
           echo "date=$DATE" >> $GITHUB_OUTPUT
           cp digests/$DATE.md /tmp/digest_content.md
-          cp digests/${DATE}_ntfy.txt /tmp/ntfy_summary.txt
+          cp digests/${DATE}_ntfy.json /tmp/ntfy_notifications.json
 
-      - name: Send push notification via ntfy.sh
+      - name: Send push notifications via ntfy.sh
         run: |
-          DATE=$(date +'%Y-%m-%d')
-          CONTENT=$(cat /tmp/ntfy_summary.txt)
-          curl -s \
-            -H "Title: 🔐 AI Security Digest — $DATE" \
-            -H "Priority: default" \
-            -H "Tags: lock,ai" \
-            -d "$CONTENT" \
-            https://ntfy.sh/koral-shimoni-ai-security-2026
+          COUNT=$(jq length /tmp/ntfy_notifications.json)
+          for i in $(seq 0 $((COUNT - 1))); do
+            TITLE=$(jq -r ".[$i].title" /tmp/ntfy_notifications.json)
+            BODY=$(jq -r ".[$i].body" /tmp/ntfy_notifications.json)
+            curl -s \
+              -H "Title: $TITLE" \
+              -H "Priority: default" \
+              -H "Tags: lock" \
+              -d "$BODY" \
+              https://ntfy.sh/koral-shimoni-ai-security-2026
+            sleep 2
+          done
 
       - name: Create GitHub Issue with full digest
         uses: actions/github-script@v7
