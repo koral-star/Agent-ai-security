@@ -390,37 +390,47 @@ def build_html_presentation(source_data, date):
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def build_ntfy_notifications(source_data):
-    """Return list of {title, body} dicts — one per source, each with URLs."""
+    """One notification per item — short description + link, like a LinkedIn post snippet."""
     notifications = []
     for source_name, config, data in source_data:
         if not data or (isinstance(data, str) and data.startswith("ERROR")):
             continue
         icon = config["icon"]
-        lines = []
         if config["type"] == "arxiv":
             for p in parse_arxiv(data)[:3]:
-                t = p["title"][:80] + ("…" if len(p["title"]) > 80 else "")
-                lines.append(t)
+                if not p["title"]:
+                    continue
+                body_parts = [p["title"]]
+                if p["abstract"]:
+                    # One clean sentence from the abstract
+                    snippet = p["abstract"][:180].rstrip()
+                    if not snippet.endswith("."):
+                        snippet = snippet.rsplit(" ", 1)[0] + "…"
+                    body_parts.append(snippet)
                 if p["link"]:
-                    lines.append(p["link"])
-                lines.append("")
+                    body_parts.append(p["link"])
+                notifications.append({
+                    "title": f"{icon} {source_name}",
+                    "body": "\n\n".join(body_parts)
+                })
         elif config["type"] == "hn_api":
             for s in parse_hn(data)[:3]:
-                t = s["title"][:80] + ("…" if len(s["title"]) > 80 else "")
-                lines.append(f"{t} ({s['points']} pts)")
+                if not s["title"]:
+                    continue
+                body_parts = [s["title"], f"🔥 {s['points']} points on Hacker News"]
                 if s["link"]:
-                    lines.append(s["link"])
-                lines.append("")
+                    body_parts.append(s["link"])
+                notifications.append({
+                    "title": f"{icon} {source_name}",
+                    "body": "\n\n".join(body_parts)
+                })
         else:
-            headlines = parse_html_headlines(data)[:3]
-            for h in headlines:
-                lines.append(h[:80] + ("…" if len(h) > 80 else ""))
-            if config["url"]:
-                lines.append("")
-                lines.append(config["url"])
-        body = "\n".join(lines).strip()
-        if body:
-            notifications.append({"title": f"{icon} {source_name}", "body": body})
+            for h in parse_html_headlines(data)[:2]:
+                body_parts = [h, config["url"]]
+                notifications.append({
+                    "title": f"{icon} {source_name}",
+                    "body": "\n\n".join(body_parts)
+                })
     return notifications
 
 def build_digest():
