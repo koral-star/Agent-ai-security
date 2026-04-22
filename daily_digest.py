@@ -96,9 +96,39 @@ def parse_hn(json_text):
     except:
         return []
 
-def parse_html_headlines(html):
-    tags = re.findall(r'<h[1-4][^>]*>(.*?)</h[1-4]>', html, re.DOTALL | re.IGNORECASE)
-    return [re.sub(r'<[^>]+>', '', t).strip() for t in tags if 15 < len(re.sub(r'<[^>]+>', '', t).strip()) < 150][:6]
+EVENT_SKIP = {"webinar", "conference", "meetup", "register", "summit", "workshop",
+              "join us", "sign up", "free event", "live session", "agenda", "speaker"}
+
+def parse_html_content(html):
+    """Parse headlines + first nearby paragraph as description. Skip events."""
+    results = []
+    # Split on heading tags and capture what follows each
+    blocks = re.split(r'(<h[1-4][^>]*>.*?</h[1-4]>)', html, flags=re.DOTALL | re.IGNORECASE)
+    for i, block in enumerate(blocks):
+        if not re.match(r'<h[1-4]', block, re.IGNORECASE):
+            continue
+        title = re.sub(r'<[^>]+>', '', block).strip()
+        if not (15 < len(title) < 200):
+            continue
+        if any(kw in title.lower() for kw in EVENT_SKIP):
+            continue
+        # Grab first <p> from the content that follows this heading
+        following = blocks[i + 1] if i + 1 < len(blocks) else ""
+        desc = ""
+        for p in re.findall(r'<p[^>]*>(.*?)</p>', following[:1000], re.DOTALL | re.IGNORECASE):
+            p_text = re.sub(r'<[^>]+>', '', p).strip()
+            if len(p_text) > 40:
+                desc = p_text[:250]
+                if not desc.endswith("."):
+                    desc = desc.rsplit(" ", 1)[0] + "…"
+                break
+        # Extract link from the heading block
+        link_match = re.search(r'href="(https?://[^"]+)"', block)
+        link = link_match.group(1) if link_match else ""
+        results.append({"title": title, "desc": desc, "link": link})
+        if len(results) >= 4:
+            break
+    return results
 
 # ── HTML Presentation Builder ─────────────────────────────────────────────────
 
@@ -212,6 +242,19 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     font-size: 13px;
     color: #7090a0;
     margin-top: 3px;
+  }}
+
+  .item-desc {{
+    font-size: 13px;
+    color: #8aa8bc;
+    margin-top: 6px;
+    line-height: 1.55;
+  }}
+
+  .item-desc a {{
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
   }}
 
   .no-data {{
@@ -334,26 +377,33 @@ def build_items_html(source_name, config, data):
     elif config["type"] == "arxiv":
         papers = parse_arxiv(data)
         if papers:
-            for p in papers:
-                link_html = f'<a href="{p["link"]}">Read →</a>' if p["link"] else ""
-                sub = f'<div class="item-sub">{p["abstract"][:120]}... {link_html}</div>' if p["abstract"] else ""
-                html_items += f'<div class="item"><div class="item-dot"></div><div class="item-text">{p["title"]}{sub}</div></div>'
+            for p in papers[:4]:
+                link_html = f' <a href="{p["link"]}">Read →</a>' if p["link"] else ""
+                abstract = p["abstract"][:220]
+                if abstract and not abstract.endswith("."):
+                    abstract = abstract.rsplit(" ", 1)[0] + "…"
+                desc = f'<div class="item-desc">{abstract}{link_html}</div>' if abstract else link_html
+                html_items += f'<div class="item"><div class="item-dot"></div><div class="item-text"><strong>{p["title"]}</strong>{desc}</div></div>'
         else:
             html_items = '<div class="no-data">No new papers today.</div>'
     elif config["type"] == "hn_api":
         stories = parse_hn(data)
         if stories:
-            for s in stories:
-                html_items += f'<div class="item"><div class="item-dot"></div><div class="item-text"><a href="{s["link"]}">{s["title"]}</a><div class="item-sub">{s["points"]} points</div></div></div>'
+            for s in stories[:4]:
+                pts = f'<div class="item-desc">🔥 {s["points"]} points on Hacker News</div>'
+                title_html = f'<a href="{s["link"]}">{s["title"]}</a>' if s["link"] else s["title"]
+                html_items += f'<div class="item"><div class="item-dot"></div><div class="item-text"><strong>{title_html}</strong>{pts}</div></div>'
         else:
             html_items = '<div class="no-data">No trending stories today.</div>'
     else:
-        headlines = parse_html_headlines(data)
-        if headlines:
-            for h in headlines:
-                html_items += f'<div class="item"><div class="item-dot"></div><div class="item-text">{h}</div></div>'
+        items = parse_html_content(data)
+        if items:
+            for it in items:
+                link_html = f' <a href="{it["link"]}">Read →</a>' if it["link"] else ""
+                desc = f'<div class="item-desc">{it["desc"]}{link_html}</div>' if it["desc"] else ""
+                html_items += f'<div class="item"><div class="item-dot"></div><div class="item-text"><strong>{it["title"]}</strong>{desc}</div></div>'
         else:
-            html_items = '<div class="no-data">No updates today — check source directly.</div>'
+            html_items = f'<div class="no-data">No updates today — <a href="{config["url"]}">check source directly</a>.</div>'
     return html_items
 
 def build_html_presentation(source_data, date):
@@ -430,8 +480,11 @@ def build_ntfy_notifications(source_data):
                     "body": "\n\n".join(body_parts)
                 })
         else:
-            for h in parse_html_headlines(data)[:2]:
-                body_parts = [h, config["url"]]
+            for it in parse_html_content(data)[:2]:
+                body_parts = [it["title"]]
+                if it["desc"]:
+                    body_parts.append(it["desc"])
+                body_parts.append(it["link"] if it["link"] else config["url"])
                 notifications.append({
                     "title": f"{icon} {source_name}",
                     "body": "\n\n".join(body_parts)
