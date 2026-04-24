@@ -285,6 +285,79 @@ Items:
 
     return flat_items
 
+
+def generate_morning_brief(ranked_items, date):
+    """
+    Claude Sonnet writes a proper analyst-style morning brief.
+    Falls back to plain markdown if no API key.
+    """
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+
+    reds    = [it for it in ranked_items if it.get("badge") == "\U0001f534"][:5]
+    yellows = [it for it in ranked_items if it.get("badge") == "\U0001f7e1"][:4]
+
+    def plain_brief():
+        out = [f"# \U0001f510 AI Security Brief \u2014 {date}\n"]
+        for badge, items in [("\U0001f534 Must Read", reds), ("\U0001f7e1 Worth Knowing", yellows)]:
+            if items:
+                out.append(f"## {badge}\n")
+                for it in items:
+                    out.append(f"**{it['title']}**  \n{it.get('summary', it.get('desc',''))}  \n{it.get('link','')}\n")
+        return "\n".join(out)
+
+    if not api_key:
+        return plain_brief()
+
+    try:
+        import anthropic
+        client = anthropic.Anthropic(api_key=api_key)
+
+        def fmt(items):
+            return "\n".join(
+                f'- {it["badge"]} {it["title"]}\n  Source: {it["source"]}\n  Desc: {it.get("desc","")[:250]}\n  Link: {it.get("link","")}'
+                for it in items
+            )
+
+        prompt = f"""You are writing a daily intelligence brief for a Senior AI Security Architect.
+
+Her context:
+{KORAL_CONTEXT}
+
+Today is {date}. Here are today's ranked items:
+
+RED (high priority):
+{fmt(reds) if reds else "None today"}
+
+YELLOW (medium priority):
+{fmt(yellows) if yellows else "None today"}
+
+Write a morning brief in this exact format:
+
+# \U0001f510 AI Security Morning Brief \u2014 {date}
+
+## \U0001f534 Act On These
+For each red item: bold title, then 2-3 sentences — what it is, what the specific risk is for her MCP/RAG/agentic work at OneZero, what she should do. Link on its own line.
+
+## \U0001f7e1 Worth Knowing
+For each yellow item: bold title, 1-2 sentences why it matters to her. Link on its own line.
+
+## Today's Signal
+4-6 sentences: what pattern do today's items show together? What does it mean for AI security direction and for her OneZero work and Nvidia-level ambitions?
+
+Be direct. No vague phrases. Say exactly what the risk is and what she should do."""
+
+        response = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=2000,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        print("Morning brief generated")
+        return response.content[0].text.strip()
+
+    except Exception as e:
+        print(f"Brief generation error: {e}")
+        return plain_brief()
+
 # ── HTML Presentation ─────────────────────────────────────────────────────────
 
 SLIDE_COLORS = [
@@ -685,24 +758,30 @@ def build_digest():
     print(f"Ranking {len(flat_items)} items with Claude...")
     ranked_items = rank_with_claude(flat_items)
 
+    print("Generating morning brief...")
+    brief = generate_morning_brief(ranked_items, today)
+
     html = build_html_presentation(source_items, ranked_items, today)
     ntfy = build_ntfy_notifications(ranked_items, today)
-    return today, "\n".join(md_lines), html, ntfy
+    return today, "\n".join(md_lines), html, ntfy, brief
 
 if __name__ == "__main__":
     print("Building AI Security Daily Digest...")
-    today, md_content, html_content, ntfy_notifications = build_digest()
+    today, md_content, html_content, ntfy_notifications, brief = build_digest()
 
-    md_file = OUTPUT_DIR / f"{today}.md"
+    md_file   = OUTPUT_DIR / f"{today}.md"
     html_file = OUTPUT_DIR / f"{today}.html"
     ntfy_file = OUTPUT_DIR / f"{today}_ntfy.json"
+    brief_file= OUTPUT_DIR / f"{today}_brief.md"
 
     md_file.write_text(md_content, encoding="utf-8")
     html_file.write_text(html_content, encoding="utf-8")
     ntfy_file.write_text(json.dumps(ntfy_notifications, ensure_ascii=False, indent=2), encoding="utf-8")
+    brief_file.write_text(brief, encoding="utf-8")
 
     print(f"\n✅ Digest saved:")
-    print(f"   Presentation: {html_file}")
-    print(f"   Markdown:     {md_file}")
+    print(f"   Brief:         {brief_file}")
+    print(f"   Presentation:  {html_file}")
+    print(f"   Markdown:      {md_file}")
     print(f"   Notifications: {ntfy_file} ({len(ntfy_notifications)} items)")
     print(f"\nOpen the HTML in Chrome → Print → Save as PDF")
