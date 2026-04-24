@@ -1,0 +1,82 @@
+[
+  {
+    "title": "📄 arXiv — AI Security Papers",
+    "body": "Showing 1&ndash;50 of 2,177 results for all: prompt injection OR LLM security OR agentic AI security OR RAG security OR adversarial LLM\n\nIn response to the urban heat island effects and building energy demands in Singapore, this study proposes an…"
+  },
+  {
+    "title": "📄 arXiv — AI Security Papers",
+    "body": "An Alternate Agentic\n\nAI…"
+  },
+  {
+    "title": "📄 arXiv — AI Security Papers",
+    "body": "Cross-Session Threats in AI\n\nIntegrating Large Language Models…"
+  },
+  {
+    "title": "🤖 arXiv — MCP & Agent Security",
+    "body": "Showing 1&ndash;12 of 12 results for all: model context protocol security OR agentic AI attack OR tool poisoning\n\nThe…"
+  },
+  {
+    "title": "🤖 arXiv — MCP & Agent Security",
+    "body": "SuperLocalMemory: Privacy-Preserving Multi-Agent\n\nAgentic…"
+  },
+  {
+    "title": "🤖 arXiv — MCP & Agent Security",
+    "body": "SMCP: Secure\n\nThe proliferation of…"
+  },
+  {
+    "title": "🛡️ OWASP GenAI",
+    "body": "OWASP GenAI Security Project\n\nA global community-driven and expert led initiative to create freely available open source guidance and resources for understanding and mitigating security and safety concerns for Generative AI  applications and adoption.\n\nhttps://genai.owasp.org"
+  },
+  {
+    "title": "🛡️ OWASP GenAI",
+    "body": "AI Security Solutions Landscape For AI and Agentic Red Teaming Q2 2026\n\nhttps://genai.owasp.org"
+  },
+  {
+    "title": "🔬 Anthropic Safety",
+    "body": "Interpretability\n\nThe mission of the Interpretability team is to discover and understand how large language models work internally, as a foundation for AI safety and positive outcomes.\n\nhttps://www.anthropic.com/research"
+  },
+  {
+    "title": "🔬 Anthropic Safety",
+    "body": "Societal Impacts\n\nWorking closely with the Anthropic Policy and Safeguards teams, Societal Impacts is a technical research team that explores how AI is used in the real world.\n\nhttps://www.anthropic.com/research"
+  },
+  {
+    "title": "🧠 Google DeepMind Safety",
+    "body": "Explore our next generation AI systems\n\nhttps://deepmind.google/research/publications/"
+  },
+  {
+    "title": "🧠 Google DeepMind Safety",
+    "body": "Our latest AI breakthroughs and updates from the lab\n\nhttps://deepmind.google/research/publications/"
+  },
+  {
+    "title": "🔥 HackerNews — AI Security",
+    "body": "Show HN: Golf Scanner – OSS tool to find and audit every MCP server\n\n🔥 3 points on Hacker News\n\nhttps://github.com/golf-mcp/golf-scanner"
+  },
+  {
+    "title": "🔥 HackerNews — AI Security",
+    "body": "Show HN: SiteIQ – LLM and Web security testing tool (built by a high schooler)\n\n🔥 4 points on Hacker News\n\nhttps://github.com/sastrophy/siteiq"
+  },
+  {
+    "title": "🔥 HackerNews — AI Security",
+    "body": "Show HN: AgentArmor – open-source 8-layer security framework for AI agents\n\n🔥 10 points on Hacker News\n\nhttps://github.com/Agastya910/agentarmor"
+  },
+  {
+    "title": "🕵️ HackerNews — Agentic AI",
+    "body": "Show HN: G0 – The control layer for AI agents (scan, test, monitor, comply)\n\n🔥 4 points on Hacker News\n\nhttps://github.com/guard0-ai/g0"
+  },
+  {
+    "title": "🕵️ HackerNews — Agentic AI",
+    "body": "Show HN: AgentArmor – open-source 8-layer security framework for AI agents\n\n🔥 10 points on Hacker News\n\nhttps://github.com/Agastya910/agentarmor"
+  },
+  {
+    "title": "🕵️ HackerNews — Agentic AI",
+    "body": "Show HN: Agentic Trust – Enterprise MCP Server Platform for Secure AI Agents\n\n🔥 4 points on Hacker News\n\nhttps://agentictrust.com"
+  },
+  {
+    "title": "🌐 The Weather Report — AI",
+    "body": "The Weather Report\n\nhttps://theweatherreport.ai"
+  },
+  {
+    "title": "🌐 The Weather Report — AI",
+    "body": "Vercel Breach Deep Dive That Doesn&#x27;t Sell You a Security Product\n\nA Vercel employee signed up for a third-party AI productivity tool using their corporate Google Workspace account. Two months later, that single grant became exfiltration of plaintext customer environment variables from Vercel&#x27;s internal…\n\nhttps://theweatherreport.ai"
+  }
+]
