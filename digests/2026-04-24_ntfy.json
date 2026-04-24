@@ -1,82 +1,166 @@
 [
   {
-    "title": "📄 arXiv — AI Security Papers",
-    "body": "Showing 1&ndash;50 of 2,177 results for all: prompt injection OR LLM security OR agentic AI security OR RAG security OR adversarial LLM\n\nIn response to the urban heat island effects and building energy demands in Singapore, this study proposes an…"
+    "title": "📄 arXiv — AI Security — Evaluation of Automatic Speech Recognition Using Generative ",
+    "body": "🟡 Automatic Speech Recognition (ASR) is traditionally evaluated using Word Error Rate (WER), a metric that is insensitive to meaning. Embedding-based semantic metrics are better correlated with human perception, but decoder-based Large Language Models (LLMs) remain underexplored for this task. This…\nhttp://arxiv.org/abs/2604.21928v1"
   },
   {
-    "title": "📄 arXiv — AI Security Papers",
-    "body": "An Alternate Agentic\n\nAI…"
+    "title": "📄 arXiv — AI Security — Long-Horizon Manipulation via Trace-Conditioned VLA Planning",
+    "body": "🟡 Long-horizon manipulation remains challenging for vision-language-action (VLA) policies: real tasks are multi-step, progress-dependent, and brittle to compounding execution errors. We present LoHo-Manip, a modular framework that scales short-horizon VLA execution to long-horizon instruction…\nhttp://arxiv.org/abs/2604.21924v1"
   },
   {
-    "title": "📄 arXiv — AI Security Papers",
-    "body": "Cross-Session Threats in AI\n\nIntegrating Large Language Models…"
+    "title": "📄 arXiv — AI Security — First measurement of wind line formation regions in an early",
+    "body": "🟡 Massive stars with their strong ionizing radiation and strong stellar winds are the key feedback agents of the universe. Stellar winds of massive stars are often measured by fitting resonance lines in the UV using non-LTE stellar atmosphere models. So far, the line formation regions of these lines…\nhttp://arxiv.org/abs/2604.21920v1"
   },
   {
-    "title": "🤖 arXiv — MCP & Agent Security",
-    "body": "Showing 1&ndash;12 of 12 results for all: model context protocol security OR agentic AI attack OR tool poisoning\n\nThe…"
+    "title": "📄 arXiv — AI Security — Algorithmic Locality via Provable Convergence in Quantum Ten",
+    "body": "🟡 Belief propagation has recently emerged as a powerful framework for evaluating tensor networks in higher dimensions, combining computational efficiency with provable analytical guarantees. In this work, we develop the first end-to-end theory of tensor network belief propagation for a class of…\nhttp://arxiv.org/abs/2604.21919v1"
   },
   {
-    "title": "🤖 arXiv — MCP & Agent Security",
-    "body": "SuperLocalMemory: Privacy-Preserving Multi-Agent\n\nAgentic…"
+    "title": "📄 arXiv — AI Security — CrossCommitVuln-Bench: A Dataset of Multi-Commit Python Vuln",
+    "body": "🟡 We present CrossCommitVuln-Bench, a curated benchmark of 15 real-world Python vulnerabilities (CVEs) in which the exploitable condition was introduced across multiple commits - each individually benign to per-commit static analysis - but collectively critical. We manually annotate each CVE with its…\nhttp://arxiv.org/abs/2604.21917v1"
   },
   {
-    "title": "🤖 arXiv — MCP & Agent Security",
-    "body": "SMCP: Secure\n\nThe proliferation of…"
+    "title": "📄 arXiv — AI Security — MathDuels: Evaluating LLMs as Problem Posers and Solvers",
+    "body": "🟡 As frontier language models attain near-ceiling performance on static mathematical benchmarks, existing evaluations are increasingly unable to differentiate model capabilities, largely because they cast models solely as solvers of fixed problem sets. We introduce MathDuels, a self-play benchmark in…\nhttp://arxiv.org/abs/2604.21916v1"
   },
   {
-    "title": "🛡️ OWASP GenAI",
-    "body": "OWASP GenAI Security Project\n\nA global community-driven and expert led initiative to create freely available open source guidance and resources for understanding and mitigating security and safety concerns for Generative AI  applications and adoption.\n\nhttps://genai.owasp.org"
+    "title": "🤖 arXiv — MCP & Agents — Seeing Fast and Slow: Learning the Flow of Time in Videos",
+    "body": "🟡 How can we tell whether a video has been sped up or slowed down? How can we generate videos at different speeds? Although videos have been central to modern computer vision research, little attention has been paid to perceiving and controlling the passage of time. In this paper, we study time as a…\nhttp://arxiv.org/abs/2604.21931v1"
   },
   {
-    "title": "🛡️ OWASP GenAI",
-    "body": "AI Security Solutions Landscape For AI and Agentic Red Teaming Q2 2026\n\nhttps://genai.owasp.org"
+    "title": "🤖 arXiv — MCP & Agents — Temporal Taskification in Streaming Continual Learning: A So",
+    "body": "🟡 Streaming Continual Learning (CL) typically converts a continuous stream into a sequence of discrete tasks through temporal partitioning. We argue that this temporal taskification step is not a neutral preprocessing choice, but a structural component of evaluation: different valid splits of the…\nhttp://arxiv.org/abs/2604.21930v1"
   },
   {
-    "title": "🔬 Anthropic Safety",
-    "body": "Interpretability\n\nThe mission of the Interpretability team is to discover and understand how large language models work internally, as a foundation for AI safety and positive outcomes.\n\nhttps://www.anthropic.com/research"
+    "title": "🤖 arXiv — MCP & Agents — Evaluation of Automatic Speech Recognition Using Generative ",
+    "body": "🟡 Automatic Speech Recognition (ASR) is traditionally evaluated using Word Error Rate (WER), a metric that is insensitive to meaning. Embedding-based semantic metrics are better correlated with human perception, but decoder-based Large Language Models (LLMs) remain underexplored for this task. This…\nhttp://arxiv.org/abs/2604.21928v1"
   },
   {
-    "title": "🔬 Anthropic Safety",
-    "body": "Societal Impacts\n\nWorking closely with the Anthropic Policy and Safeguards teams, Societal Impacts is a technical research team that explores how AI is used in the real world.\n\nhttps://www.anthropic.com/research"
+    "title": "🤖 arXiv — MCP & Agents — Fine-Tuning Regimes Define Distinct Continual Learning Probl",
+    "body": "🟡 Continual learning (CL) studies how models acquire tasks sequentially while retaining previously learned knowledge. Despite substantial progress in benchmarking CL methods, comparative evaluations typically keep the fine-tuning regime fixed. In this paper, we argue that the fine-tuning regime,…\nhttp://arxiv.org/abs/2604.21927v1"
   },
   {
-    "title": "🧠 Google DeepMind Safety",
-    "body": "Explore our next generation AI systems\n\nhttps://deepmind.google/research/publications/"
+    "title": "🤖 arXiv — MCP & Agents — Seeing Without Eyes: 4D Human-Scene Understanding from Weara",
+    "body": "🟡 Understanding human activities and their surrounding environments typically relies on visual perception, yet cameras pose persistent challenges in privacy, safety, energy efficiency, and scalability. We explore an alternative: 4D perception without vision. Its goal is to reconstruct human motion…\nhttp://arxiv.org/abs/2604.21926v1"
   },
   {
-    "title": "🧠 Google DeepMind Safety",
-    "body": "Our latest AI breakthroughs and updates from the lab\n\nhttps://deepmind.google/research/publications/"
+    "title": "🤖 arXiv — MCP & Agents — Characterizing Streaming Decidability of CSPs via Non-Redund",
+    "body": "🟡 We study the single-pass streaming complexity of deciding satisfiability of Constraint Satisfaction Problems (CSPs). A CSP is specified by a constraint language $Γ$, that is, a finite set of $k$-ary relations over the domain $[q] = \\{0, \\dots, q-1\\}$. An instance of $\\mathsf{CSP}(Γ)$ consists of…\nhttp://arxiv.org/abs/2604.21922v1"
   },
   {
-    "title": "🔥 HackerNews — AI Security",
-    "body": "Show HN: Golf Scanner – OSS tool to find and audit every MCP server\n\n🔥 3 points on Hacker News\n\nhttps://github.com/golf-mcp/golf-scanner"
+    "title": "🔬 Anthropic Safety — Interpretability",
+    "body": "🟡 The mission of the Interpretability team is to discover and understand how large language models work internally, as a foundation for AI safety and positive outcomes."
   },
   {
-    "title": "🔥 HackerNews — AI Security",
-    "body": "Show HN: SiteIQ – LLM and Web security testing tool (built by a high schooler)\n\n🔥 4 points on Hacker News\n\nhttps://github.com/sastrophy/siteiq"
+    "title": "🔬 Anthropic Safety — Societal Impacts",
+    "body": "🟡 Working closely with the Anthropic Policy and Safeguards teams, Societal Impacts is a technical research team that explores how AI is used in the real world."
   },
   {
-    "title": "🔥 HackerNews — AI Security",
-    "body": "Show HN: AgentArmor – open-source 8-layer security framework for AI agents\n\n🔥 10 points on Hacker News\n\nhttps://github.com/Agastya910/agentarmor"
+    "title": "🔬 Anthropic Safety — Frontier Red Team",
+    "body": "🟡 The Frontier Red Team analyzes the implications of frontier AI models for cybersecurity, biosecurity, and autonomous systems."
   },
   {
-    "title": "🕵️ HackerNews — Agentic AI",
-    "body": "Show HN: G0 – The control layer for AI agents (scan, test, monitor, comply)\n\n🔥 4 points on Hacker News\n\nhttps://github.com/guard0-ai/g0"
+    "title": "🔬 Anthropic Safety — Emotion concepts and their function in a large language mode",
+    "body": "🟡 All modern language models sometimes act like they have emotions. What’s behind these behaviors? Our interpretability team investigates."
   },
   {
-    "title": "🕵️ HackerNews — Agentic AI",
-    "body": "Show HN: AgentArmor – open-source 8-layer security framework for AI agents\n\n🔥 10 points on Hacker News\n\nhttps://github.com/Agastya910/agentarmor"
+    "title": "🧠 Google DeepMind — Gemini Robotics ER-1.6 enhances reasoning to help robots nav",
+    "body": "🟡 An overview of Gemini Robotics-ER 1.6, an upgrade to our reasoning-first model that helps robots to understand their environment.\nhttps://blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-robotics-er-1-6/"
   },
   {
-    "title": "🕵️ HackerNews — Agentic AI",
-    "body": "Show HN: Agentic Trust – Enterprise MCP Server Platform for Secure AI Agents\n\n🔥 4 points on Hacker News\n\nhttps://agentictrust.com"
+    "title": "🧠 Google DeepMind — The latest AI news we announced in March 2026",
+    "body": "🟡 Here are Google’s latest AI updates from March 2026\nhttps://blog.google/innovation-and-ai/technology/ai/google-ai-updates-march-2026/"
   },
   {
-    "title": "🌐 The Weather Report — AI",
-    "body": "The Weather Report\n\nhttps://theweatherreport.ai"
+    "title": "🧠 Google DeepMind — Measuring progress toward AGI: A cognitive framework",
+    "body": "🟡 Google DeepMind proposes a cognitive framework to evaluate AGI and launches a Kaggle hackathon to build capability benchmarks\nhttps://blog.google/innovation-and-ai/models-and-research/google-deepmind/measuring-agi-cognitive-framework/"
   },
   {
-    "title": "🌐 The Weather Report — AI",
-    "body": "Vercel Breach Deep Dive That Doesn&#x27;t Sell You a Security Product\n\nA Vercel employee signed up for a third-party AI productivity tool using their corporate Google Workspace account. Two months later, that single grant became exfiltration of plaintext customer environment variables from Vercel&#x27;s internal…\n\nhttps://theweatherreport.ai"
+    "title": "🧠 Google DeepMind — Broadening advanced AI education across Africa",
+    "body": "🟡 Google DeepMind, Google.org, and Google Skills unite to empower the next generation of AI researchers and educators with a free, high-impact curriculum.\nhttps://blog.google/company-news/inside-google/around-the-globe/google-africa/ai-research-foundations/"
+  },
+  {
+    "title": "🧠 Google DeepMind — Platform 37 and The AI Exchange: new spaces for AI innovatio",
+    "body": "🟡 Google’s newest London building, Platform 37, is named to honor Google DeepMind’s AlphaGo.\nhttps://blog.google/company-news/inside-google/around-the-globe/google-europe/united-kingdom/platform-37-the-ai-exchange/"
+  },
+  {
+    "title": "🛡️ OWASP GenAI — OWASP GenAI Security Project",
+    "body": "🟡 A global community-driven and expert led initiative to create freely available open source guidance and resources for understanding and mitigating security and safety concerns for Generative AI  applications and adoption."
+  },
+  {
+    "title": "🛡️ OWASP GenAI — AI Security Solutions Landscape For AI and Agentic Red Teami",
+    "body": "🟡 "
+  },
+  {
+    "title": "🛡️ OWASP GenAI — AI Security Solutions Landscape for Agentic AI Q2 2026",
+    "body": "🟡 "
+  },
+  {
+    "title": "🛡️ OWASP GenAI — Al Security Solutions Landscape For LLM and Gen Al Apps Q2 2",
+    "body": "🟡 "
+  },
+  {
+    "title": "🌐 The Weather Report — AI — The Weather Report",
+    "body": "🟡 "
+  },
+  {
+    "title": "🌐 The Weather Report — AI — Vercel Breach Deep Dive That Doesn&#x27;t Sell You a Securit",
+    "body": "🟡 A Vercel employee signed up for a third-party AI productivity tool using their corporate Google Workspace account. Two months later, that single grant became exfiltration of plaintext customer environment variables from Vercel&#x27;s internal…"
+  },
+  {
+    "title": "🌐 The Weather Report — AI — Mozilla&#x27;s AI Vulnerability Win Only Works If You Are th",
+    "body": "🟡 Mozilla concluded &quot;no category...humans can find that this model can&#x27;t&quot; and &quot;defenders finally have a chance to win, decisively.&quot; True if you own your stack. For banks, hospitals, and utilities running vendor code they…"
+  },
+  {
+    "title": "🌐 The Weather Report — AI — LLMs can barely obfuscate XSS. Here&#x27;s what that teaches",
+    "body": "🟡 Penn State researchers fine-tuned an LLM to generate obfuscated XSS payloads. Only 22% of outputs actually execute as XSS, up from 15% before fine-tuning. Runtime execution is the only honest validator for synthetically generated obfuscated XSS…"
+  },
+  {
+    "title": "🔥 HackerNews — AI Security — Show HN: Golf Scanner – OSS tool to find and audit every MCP",
+    "body": "🟡 3 points on Hacker News\nhttps://github.com/golf-mcp/golf-scanner"
+  },
+  {
+    "title": "🔥 HackerNews — AI Security — Show HN: SiteIQ – LLM and Web security testing tool (built b",
+    "body": "🟡 4 points on Hacker News\nhttps://github.com/sastrophy/siteiq"
+  },
+  {
+    "title": "🔥 HackerNews — AI Security — Show HN: AgentArmor – open-source 8-layer security framework",
+    "body": "🟡 10 points on Hacker News\nhttps://github.com/Agastya910/agentarmor"
+  },
+  {
+    "title": "🔥 HackerNews — AI Security — Show HN: Stryda – I built a Red Teaming tool for LLMs at 14y",
+    "body": "🟡 1 points on Hacker News\nhttps://stryda.online"
+  },
+  {
+    "title": "🔥 HackerNews — AI Security — Show HN: Pingu Unchained an Unrestricted LLM for High-Risk A",
+    "body": "🟡 11 points on Hacker News\nhttps://pingu.audn.ai"
+  },
+  {
+    "title": "🔥 HackerNews — AI Security — Show HN: Built firewall for LLMs after prompt injection bypa",
+    "body": "🟡 1 points on Hacker News\nhttps://github.com/WardLink/TrustLayer--Security-Control-Plane-For-LLM-AI"
+  },
+  {
+    "title": "🕵️ HackerNews — Agentic AI — Show HN: G0 – The control layer for AI agents (scan, test, m",
+    "body": "🟡 4 points on Hacker News\nhttps://github.com/guard0-ai/g0"
+  },
+  {
+    "title": "🕵️ HackerNews — Agentic AI — Show HN: AgentArmor – open-source 8-layer security framework",
+    "body": "🟡 10 points on Hacker News\nhttps://github.com/Agastya910/agentarmor"
+  },
+  {
+    "title": "🕵️ HackerNews — Agentic AI — Show HN: Agentic Trust – Enterprise MCP Server Platform for ",
+    "body": "🟡 4 points on Hacker News\nhttps://agentictrust.com"
+  },
+  {
+    "title": "🕵️ HackerNews — Agentic AI — Show HN: Raypher–eBPF-based runtime security and hardware id",
+    "body": "🟡 2 points on Hacker News\nhttps://github.com/kidigapeet/Raypher-core"
+  },
+  {
+    "title": "🕵️ HackerNews — Agentic AI — Show HN: Agent Vault – Open-source credential proxy and vaul",
+    "body": "🟡 107 points on Hacker News\nhttps://github.com/Infisical/agent-vault"
+  },
+  {
+    "title": "🕵️ HackerNews — Agentic AI — Show HN: Agent-of-empires: OpenCode and Claude Code session ",
+    "body": "🟡 118 points on Hacker News\nhttps://github.com/njbrake/agent-of-empires"
   }
 ]

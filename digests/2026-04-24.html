@@ -8,7 +8,7 @@
 
   .slide {
     width: 1080px;
-    height: 1080px;
+    min-height: 1080px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -50,11 +50,11 @@
   }
 
   .slide-title {
-    font-size: 38px;
+    font-size: 36px;
     font-weight: 800;
     color: #ffffff;
     line-height: 1.15;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }
 
   .slide-divider {
@@ -62,7 +62,7 @@
     height: 3px;
     background: var(--accent);
     border-radius: 2px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }
 
   .items { z-index: 1; flex: 1; }
@@ -71,49 +71,59 @@
     display: flex;
     align-items: flex-start;
     gap: 14px;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
+    border-left: 2px solid rgba(255,255,255,0.06);
+    padding-left: 14px;
   }
 
-  .item-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
+  .item-badge {
+    font-size: 16px;
     flex-shrink: 0;
-    margin-top: 7px;
+    margin-top: 2px;
   }
 
-  .item-text {
-    font-size: 17px;
-    color: #d0e0f0;
-    line-height: 1.5;
+  .item-body { flex: 1; }
+
+  .item-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #e8f0f7;
+    line-height: 1.4;
   }
 
-  .item-text a {
-    color: var(--accent);
+  .item-title a {
+    color: #e8f0f7;
     text-decoration: none;
   }
 
-  .item-sub {
-    font-size: 13px;
-    color: #7090a0;
-    margin-top: 3px;
-  }
-
-  .item-desc {
+  .item-summary {
     font-size: 13px;
     color: #8aa8bc;
-    margin-top: 6px;
+    margin-top: 5px;
     line-height: 1.55;
   }
 
-  .item-desc a {
+  .item-link {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .item-link a {
     color: var(--accent);
     text-decoration: none;
     font-weight: 600;
   }
 
+  .item-source {
+    font-size: 11px;
+    color: #4a6070;
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
   .no-data {
-    font-size: 16px;
+    font-size: 15px;
     color: #4a6070;
     font-style: italic;
   }
@@ -125,6 +135,7 @@
     align-items: center;
     border-top: 1px solid rgba(255,255,255,0.08);
     padding-top: 20px;
+    margin-top: 24px;
   }
 
   .footer-name {
@@ -144,7 +155,6 @@
     color: #4a6070;
   }
 
-  /* Cover slide */
   .cover .slide-title { font-size: 52px; }
   .cover .cover-sub {
     font-size: 20px;
@@ -180,15 +190,16 @@
     <span class="slide-tag">Daily Intelligence</span>
     <div class="slide-title">🔐 AI Security<br/>Digest</div>
     <div class="cover-sub">
-      What you need to know in AI security today.<br/>
-      Prompt injection · Agentic AI · RAG · MCP · LLM attacks
+      Ranked by relevance to your work at OneZero.<br/>
+      🔴 Must read &nbsp;·&nbsp; 🟡 Worth knowing &nbsp;·&nbsp; 🟢 Background
     </div>
     <div class="cover-topics">
-      <span class="topic-chip">📄 New Research Papers</span>
-      <span class="topic-chip">🛡️ OWASP Updates</span>
+      <span class="topic-chip">📄 arXiv Papers</span>
+      <span class="topic-chip">🛡️ OWASP GenAI</span>
       <span class="topic-chip">⚡ Nvidia Security</span>
-      <span class="topic-chip">🔬 Anthropic Safety</span>
+      <span class="topic-chip">🔬 Anthropic</span>
       <span class="topic-chip">🧠 DeepMind</span>
+      <span class="topic-chip">🌐 Weather Report</span>
       <span class="topic-chip">🔥 HackerNews</span>
     </div>
   </div>
@@ -197,109 +208,396 @@
       <div class="footer-name">Koral Shimoni</div>
       <div class="footer-title">AI Security Architect & Manager</div>
     </div>
-    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 1/11</div>
+    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 1/12</div>
   </div>
 </div>
 
-<div class="slide" style="background:#0d3b2e; --bg:#0d3b2e; --accent:#00d4aa;">
+<div class="slide" style="background:#1a1a2e; --bg:#1a1a2e; --accent:#e94560;">
   <div class="slide-header">
-    <span class="slide-tag">AI Security Intel</span>
-    <span class="slide-icon">📄</span>
-    <div class="slide-title">arXiv — AI Security Papers</div>
+    <span class="slide-tag">🔴 Must Read Today</span>
+    <div class="slide-title">Top Priorities</div>
     <div class="slide-divider"></div>
   </div>
-  <div class="items"><div class="item"><div class="item-dot"></div><div class="item-text"><strong>Showing 1&ndash;50 of 2,177 results for all: prompt injection OR LLM security OR agentic AI security OR RAG security OR adversarial LLM</strong><div class="item-desc">In response to the urban heat island effects and building energy demands in Singapore, this study proposes an…</div></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong>An Alternate Agentic</strong><div class="item-desc">AI…</div></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong>Cross-Session Threats in AI</strong><div class="item-desc">Integrating Large Language Models…</div></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong>Mind the Prompt</strong><div class="item-desc">Text-to-image(T2I) models like Stable Diffusion and DALL-E have made generative…</div></div></div></div>
+  <div class="items"><div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="http://arxiv.org/abs/2604.21928v1">Evaluation of Automatic Speech Recognition Using Generative Large Language Models</a></div>
+    <div class="item-summary">Automatic Speech Recognition (ASR) is traditionally evaluated using Word Error Rate (WER), a metric that is insensitive to meaning. Embedding-based semantic metrics are better correlated with human perception, but decoder-based Large Language Models (LLMs) remain underexplored for this task. This…</div>
+    <div class="item-source">arXiv — AI Security</div>
+    <div class="item-link"><a href="http://arxiv.org/abs/2604.21928v1">Read → http://arxiv.org/abs/2604.21928v1</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="http://arxiv.org/abs/2604.21924v1">Long-Horizon Manipulation via Trace-Conditioned VLA Planning</a></div>
+    <div class="item-summary">Long-horizon manipulation remains challenging for vision-language-action (VLA) policies: real tasks are multi-step, progress-dependent, and brittle to compounding execution errors. We present LoHo-Manip, a modular framework that scales short-horizon VLA execution to long-horizon instruction…</div>
+    <div class="item-source">arXiv — AI Security</div>
+    <div class="item-link"><a href="http://arxiv.org/abs/2604.21924v1">Read → http://arxiv.org/abs/2604.21924v1</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="http://arxiv.org/abs/2604.21920v1">First measurement of wind line formation regions in an early O-type star</a></div>
+    <div class="item-summary">Massive stars with their strong ionizing radiation and strong stellar winds are the key feedback agents of the universe. Stellar winds of massive stars are often measured by fitting resonance lines in the UV using non-LTE stellar atmosphere models. So far, the line formation regions of these lines…</div>
+    <div class="item-source">arXiv — AI Security</div>
+    <div class="item-link"><a href="http://arxiv.org/abs/2604.21920v1">Read → http://arxiv.org/abs/2604.21920v1</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="http://arxiv.org/abs/2604.21919v1">Algorithmic Locality via Provable Convergence in Quantum Tensor Networks</a></div>
+    <div class="item-summary">Belief propagation has recently emerged as a powerful framework for evaluating tensor networks in higher dimensions, combining computational efficiency with provable analytical guarantees. In this work, we develop the first end-to-end theory of tensor network belief propagation for a class of…</div>
+    <div class="item-source">arXiv — AI Security</div>
+    <div class="item-link"><a href="http://arxiv.org/abs/2604.21919v1">Read → http://arxiv.org/abs/2604.21919v1</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="http://arxiv.org/abs/2604.21917v1">CrossCommitVuln-Bench: A Dataset of Multi-Commit Python Vulnerabilities Invisible to Per-Commit Static Analysis</a></div>
+    <div class="item-summary">We present CrossCommitVuln-Bench, a curated benchmark of 15 real-world Python vulnerabilities (CVEs) in which the exploitable condition was introduced across multiple commits - each individually benign to per-commit static analysis - but collectively critical. We manually annotate each CVE with its…</div>
+    <div class="item-source">arXiv — AI Security</div>
+    <div class="item-link"><a href="http://arxiv.org/abs/2604.21917v1">Read → http://arxiv.org/abs/2604.21917v1</a></div>
+  </div>
+</div></div>
   <div class="slide-footer">
     <div>
       <div class="footer-name">Koral Shimoni</div>
       <div class="footer-title">AI Security Architect & Manager</div>
     </div>
-    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 2/11</div>
+    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 2/12</div>
   </div>
 </div>
 
 <div class="slide" style="background:#2d1b4e; --bg:#2d1b4e; --accent:#b57bee;">
   <div class="slide-header">
     <span class="slide-tag">AI Security Intel</span>
-    <span class="slide-icon">🤖</span>
-    <div class="slide-title">arXiv — MCP & Agent Security</div>
+    <span class="slide-icon">📄</span>
+    <div class="slide-title">arXiv — AI Security</div>
     <div class="slide-divider"></div>
   </div>
-  <div class="items"><div class="item"><div class="item-dot"></div><div class="item-text"><strong>Showing 1&ndash;12 of 12 results for all: model context protocol security OR agentic AI attack OR tool poisoning</strong><div class="item-desc">The…</div></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong>SuperLocalMemory: Privacy-Preserving Multi-Agent</strong><div class="item-desc">Agentic…</div></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong>SMCP: Secure</strong><div class="item-desc">The proliferation of…</div></div></div></div>
+  <div class="items"><div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="http://arxiv.org/abs/2604.21928v1">Evaluation of Automatic Speech Recognition Using Generative Large Language Models</a></div>
+    <div class="item-summary">Automatic Speech Recognition (ASR) is traditionally evaluated using Word Error Rate (WER), a metric that is insensitive to meaning. Embedding-based semantic metrics are better correlated with human perception, but decoder-based Large Language Models (LLMs) remain underexplored for this task. This…</div>
+    <div class="item-source">arXiv — AI Security</div>
+    <div class="item-link"><a href="http://arxiv.org/abs/2604.21928v1">Read → http://arxiv.org/abs/2604.21928v1</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="http://arxiv.org/abs/2604.21924v1">Long-Horizon Manipulation via Trace-Conditioned VLA Planning</a></div>
+    <div class="item-summary">Long-horizon manipulation remains challenging for vision-language-action (VLA) policies: real tasks are multi-step, progress-dependent, and brittle to compounding execution errors. We present LoHo-Manip, a modular framework that scales short-horizon VLA execution to long-horizon instruction…</div>
+    <div class="item-source">arXiv — AI Security</div>
+    <div class="item-link"><a href="http://arxiv.org/abs/2604.21924v1">Read → http://arxiv.org/abs/2604.21924v1</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="http://arxiv.org/abs/2604.21920v1">First measurement of wind line formation regions in an early O-type star</a></div>
+    <div class="item-summary">Massive stars with their strong ionizing radiation and strong stellar winds are the key feedback agents of the universe. Stellar winds of massive stars are often measured by fitting resonance lines in the UV using non-LTE stellar atmosphere models. So far, the line formation regions of these lines…</div>
+    <div class="item-source">arXiv — AI Security</div>
+    <div class="item-link"><a href="http://arxiv.org/abs/2604.21920v1">Read → http://arxiv.org/abs/2604.21920v1</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="http://arxiv.org/abs/2604.21919v1">Algorithmic Locality via Provable Convergence in Quantum Tensor Networks</a></div>
+    <div class="item-summary">Belief propagation has recently emerged as a powerful framework for evaluating tensor networks in higher dimensions, combining computational efficiency with provable analytical guarantees. In this work, we develop the first end-to-end theory of tensor network belief propagation for a class of…</div>
+    <div class="item-source">arXiv — AI Security</div>
+    <div class="item-link"><a href="http://arxiv.org/abs/2604.21919v1">Read → http://arxiv.org/abs/2604.21919v1</a></div>
+  </div>
+</div></div>
   <div class="slide-footer">
     <div>
       <div class="footer-name">Koral Shimoni</div>
       <div class="footer-title">AI Security Architect & Manager</div>
     </div>
-    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 3/11</div>
+    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 3/12</div>
   </div>
 </div>
 
 <div class="slide" style="background:#2d2010; --bg:#2d2010; --accent:#f5a623;">
   <div class="slide-header">
     <span class="slide-tag">AI Security Intel</span>
-    <span class="slide-icon">🛡️</span>
-    <div class="slide-title">OWASP GenAI</div>
+    <span class="slide-icon">🤖</span>
+    <div class="slide-title">arXiv — MCP & Agents</div>
     <div class="slide-divider"></div>
   </div>
-  <div class="items"><div class="item"><div class="item-dot"></div><div class="item-text"><strong>OWASP GenAI Security Project</strong><div class="item-desc">A global community-driven and expert led initiative to create freely available open source guidance and resources for understanding and mitigating security and safety concerns for Generative AI  applications and adoption.</div></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong>AI Security Solutions Landscape For AI and Agentic Red Teaming Q2 2026</strong></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong>AI Security Solutions Landscape for Agentic AI Q2 2026</strong></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong>Al Security Solutions Landscape For LLM and Gen Al Apps Q2 2026</strong></div></div></div>
+  <div class="items"><div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="http://arxiv.org/abs/2604.21931v1">Seeing Fast and Slow: Learning the Flow of Time in Videos</a></div>
+    <div class="item-summary">How can we tell whether a video has been sped up or slowed down? How can we generate videos at different speeds? Although videos have been central to modern computer vision research, little attention has been paid to perceiving and controlling the passage of time. In this paper, we study time as a…</div>
+    <div class="item-source">arXiv — MCP & Agents</div>
+    <div class="item-link"><a href="http://arxiv.org/abs/2604.21931v1">Read → http://arxiv.org/abs/2604.21931v1</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="http://arxiv.org/abs/2604.21930v1">Temporal Taskification in Streaming Continual Learning: A Source of Evaluation Instability</a></div>
+    <div class="item-summary">Streaming Continual Learning (CL) typically converts a continuous stream into a sequence of discrete tasks through temporal partitioning. We argue that this temporal taskification step is not a neutral preprocessing choice, but a structural component of evaluation: different valid splits of the…</div>
+    <div class="item-source">arXiv — MCP & Agents</div>
+    <div class="item-link"><a href="http://arxiv.org/abs/2604.21930v1">Read → http://arxiv.org/abs/2604.21930v1</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="http://arxiv.org/abs/2604.21928v1">Evaluation of Automatic Speech Recognition Using Generative Large Language Models</a></div>
+    <div class="item-summary">Automatic Speech Recognition (ASR) is traditionally evaluated using Word Error Rate (WER), a metric that is insensitive to meaning. Embedding-based semantic metrics are better correlated with human perception, but decoder-based Large Language Models (LLMs) remain underexplored for this task. This…</div>
+    <div class="item-source">arXiv — MCP & Agents</div>
+    <div class="item-link"><a href="http://arxiv.org/abs/2604.21928v1">Read → http://arxiv.org/abs/2604.21928v1</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="http://arxiv.org/abs/2604.21927v1">Fine-Tuning Regimes Define Distinct Continual Learning Problems</a></div>
+    <div class="item-summary">Continual learning (CL) studies how models acquire tasks sequentially while retaining previously learned knowledge. Despite substantial progress in benchmarking CL methods, comparative evaluations typically keep the fine-tuning regime fixed. In this paper, we argue that the fine-tuning regime,…</div>
+    <div class="item-source">arXiv — MCP & Agents</div>
+    <div class="item-link"><a href="http://arxiv.org/abs/2604.21927v1">Read → http://arxiv.org/abs/2604.21927v1</a></div>
+  </div>
+</div></div>
   <div class="slide-footer">
     <div>
       <div class="footer-name">Koral Shimoni</div>
       <div class="footer-title">AI Security Architect & Manager</div>
     </div>
-    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 4/11</div>
+    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 4/12</div>
   </div>
 </div>
 
 <div class="slide" style="background:#0f2d48; --bg:#0f2d48; --accent:#5bc8f5;">
   <div class="slide-header">
     <span class="slide-tag">AI Security Intel</span>
-    <span class="slide-icon">⚡</span>
-    <div class="slide-title">Nvidia AI Security Blog</div>
+    <span class="slide-icon">🔬</span>
+    <div class="slide-title">Anthropic Safety</div>
     <div class="slide-divider"></div>
   </div>
-  <div class="items"><div class="no-data">No new content today — check source directly.</div></div>
+  <div class="items"><div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title">Interpretability</div>
+    <div class="item-summary">The mission of the Interpretability team is to discover and understand how large language models work internally, as a foundation for AI safety and positive outcomes.</div>
+    <div class="item-source">Anthropic Safety</div>
+    
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title">Societal Impacts</div>
+    <div class="item-summary">Working closely with the Anthropic Policy and Safeguards teams, Societal Impacts is a technical research team that explores how AI is used in the real world.</div>
+    <div class="item-source">Anthropic Safety</div>
+    
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title">Frontier Red Team</div>
+    <div class="item-summary">The Frontier Red Team analyzes the implications of frontier AI models for cybersecurity, biosecurity, and autonomous systems.</div>
+    <div class="item-source">Anthropic Safety</div>
+    
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title">Emotion concepts and their function in a large language model</div>
+    <div class="item-summary">All modern language models sometimes act like they have emotions. What’s behind these behaviors? Our interpretability team investigates.</div>
+    <div class="item-source">Anthropic Safety</div>
+    
+  </div>
+</div></div>
   <div class="slide-footer">
     <div>
       <div class="footer-name">Koral Shimoni</div>
       <div class="footer-title">AI Security Architect & Manager</div>
     </div>
-    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 5/11</div>
+    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 5/12</div>
   </div>
 </div>
 
 <div class="slide" style="background:#1a1a2e; --bg:#1a1a2e; --accent:#e94560;">
   <div class="slide-header">
     <span class="slide-tag">AI Security Intel</span>
-    <span class="slide-icon">🔬</span>
-    <div class="slide-title">Anthropic Safety</div>
+    <span class="slide-icon">🧠</span>
+    <div class="slide-title">Google DeepMind</div>
     <div class="slide-divider"></div>
   </div>
-  <div class="items"><div class="item"><div class="item-dot"></div><div class="item-text"><strong>Interpretability</strong><div class="item-desc">The mission of the Interpretability team is to discover and understand how large language models work internally, as a foundation for AI safety and positive outcomes.</div></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong>Societal Impacts</strong><div class="item-desc">Working closely with the Anthropic Policy and Safeguards teams, Societal Impacts is a technical research team that explores how AI is used in the real world.</div></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong>Frontier Red Team</strong><div class="item-desc">The Frontier Red Team analyzes the implications of frontier AI models for cybersecurity, biosecurity, and autonomous systems.</div></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong>Emotion concepts and their function in a large language model</strong><div class="item-desc">All modern language models sometimes act like they have emotions. What’s behind these behaviors? Our interpretability team investigates.</div></div></div></div>
+  <div class="items"><div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-robotics-er-1-6/">Gemini Robotics ER-1.6 enhances reasoning to help robots navigate real-world tasks.</a></div>
+    <div class="item-summary">An overview of Gemini Robotics-ER 1.6, an upgrade to our reasoning-first model that helps robots to understand their environment.</div>
+    <div class="item-source">Google DeepMind</div>
+    <div class="item-link"><a href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-robotics-er-1-6/">Read → https://blog.google/innovation-and-ai/models-and-research/go…</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-march-2026/">The latest AI news we announced in March 2026</a></div>
+    <div class="item-summary">Here are Google’s latest AI updates from March 2026</div>
+    <div class="item-source">Google DeepMind</div>
+    <div class="item-link"><a href="https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-march-2026/">Read → https://blog.google/innovation-and-ai/technology/ai/google-a…</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/measuring-agi-cognitive-framework/">Measuring progress toward AGI: A cognitive framework</a></div>
+    <div class="item-summary">Google DeepMind proposes a cognitive framework to evaluate AGI and launches a Kaggle hackathon to build capability benchmarks</div>
+    <div class="item-source">Google DeepMind</div>
+    <div class="item-link"><a href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/measuring-agi-cognitive-framework/">Read → https://blog.google/innovation-and-ai/models-and-research/go…</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="https://blog.google/company-news/inside-google/around-the-globe/google-africa/ai-research-foundations/">Broadening advanced AI education across Africa</a></div>
+    <div class="item-summary">Google DeepMind, Google.org, and Google Skills unite to empower the next generation of AI researchers and educators with a free, high-impact curriculum.</div>
+    <div class="item-source">Google DeepMind</div>
+    <div class="item-link"><a href="https://blog.google/company-news/inside-google/around-the-globe/google-africa/ai-research-foundations/">Read → https://blog.google/company-news/inside-google/around-the-gl…</a></div>
+  </div>
+</div></div>
   <div class="slide-footer">
     <div>
       <div class="footer-name">Koral Shimoni</div>
       <div class="footer-title">AI Security Architect & Manager</div>
     </div>
-    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 6/11</div>
+    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 6/12</div>
   </div>
 </div>
 
 <div class="slide" style="background:#0d3b2e; --bg:#0d3b2e; --accent:#00d4aa;">
   <div class="slide-header">
     <span class="slide-tag">AI Security Intel</span>
-    <span class="slide-icon">🧠</span>
-    <div class="slide-title">Google DeepMind Safety</div>
+    <span class="slide-icon">⚡</span>
+    <div class="slide-title">Nvidia AI Security</div>
     <div class="slide-divider"></div>
   </div>
-  <div class="items"><div class="item"><div class="item-dot"></div><div class="item-text"><strong>Explore our next generation AI systems</strong></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong>Our latest AI breakthroughs and updates from the lab</strong></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong>Unlocking a new era of discovery with AI</strong></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong>Our mission is to build AI responsibly to benefit humanity</strong></div></div></div>
+  <div class="items"><div class="no-data">No new content today.</div></div>
   <div class="slide-footer">
     <div>
       <div class="footer-name">Koral Shimoni</div>
       <div class="footer-title">AI Security Architect & Manager</div>
     </div>
-    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 7/11</div>
+    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 7/12</div>
+  </div>
+</div>
+
+<div class="slide" style="background:#2d1b4e; --bg:#2d1b4e; --accent:#b57bee;">
+  <div class="slide-header">
+    <span class="slide-tag">AI Security Intel</span>
+    <span class="slide-icon">🛡️</span>
+    <div class="slide-title">OWASP GenAI</div>
+    <div class="slide-divider"></div>
+  </div>
+  <div class="items"><div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title">OWASP GenAI Security Project</div>
+    <div class="item-summary">A global community-driven and expert led initiative to create freely available open source guidance and resources for understanding and mitigating security and safety concerns for Generative AI  applications and adoption.</div>
+    <div class="item-source">OWASP GenAI</div>
+    
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title">AI Security Solutions Landscape For AI and Agentic Red Teaming Q2 2026</div>
+    
+    <div class="item-source">OWASP GenAI</div>
+    
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title">AI Security Solutions Landscape for Agentic AI Q2 2026</div>
+    
+    <div class="item-source">OWASP GenAI</div>
+    
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title">Al Security Solutions Landscape For LLM and Gen Al Apps Q2 2026</div>
+    
+    <div class="item-source">OWASP GenAI</div>
+    
+  </div>
+</div></div>
+  <div class="slide-footer">
+    <div>
+      <div class="footer-name">Koral Shimoni</div>
+      <div class="footer-title">AI Security Architect & Manager</div>
+    </div>
+    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 8/12</div>
+  </div>
+</div>
+
+<div class="slide" style="background:#2d2010; --bg:#2d2010; --accent:#f5a623;">
+  <div class="slide-header">
+    <span class="slide-tag">AI Security Intel</span>
+    <span class="slide-icon">🌐</span>
+    <div class="slide-title">The Weather Report — AI</div>
+    <div class="slide-divider"></div>
+  </div>
+  <div class="items"><div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title">The Weather Report</div>
+    
+    <div class="item-source">The Weather Report — AI</div>
+    
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title">Vercel Breach Deep Dive That Doesn&#x27;t Sell You a Security Product</div>
+    <div class="item-summary">A Vercel employee signed up for a third-party AI productivity tool using their corporate Google Workspace account. Two months later, that single grant became exfiltration of plaintext customer environment variables from Vercel&#x27;s internal…</div>
+    <div class="item-source">The Weather Report — AI</div>
+    
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title">Mozilla&#x27;s AI Vulnerability Win Only Works If You Are the Software</div>
+    <div class="item-summary">Mozilla concluded &quot;no category...humans can find that this model can&#x27;t&quot; and &quot;defenders finally have a chance to win, decisively.&quot; True if you own your stack. For banks, hospitals, and utilities running vendor code they…</div>
+    <div class="item-source">The Weather Report — AI</div>
+    
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title">LLMs can barely obfuscate XSS. Here&#x27;s what that teaches us.</div>
+    <div class="item-summary">Penn State researchers fine-tuned an LLM to generate obfuscated XSS payloads. Only 22% of outputs actually execute as XSS, up from 15% before fine-tuning. Runtime execution is the only honest validator for synthetically generated obfuscated XSS…</div>
+    <div class="item-source">The Weather Report — AI</div>
+    
+  </div>
+</div></div>
+  <div class="slide-footer">
+    <div>
+      <div class="footer-name">Koral Shimoni</div>
+      <div class="footer-title">AI Security Architect & Manager</div>
+    </div>
+    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 9/12</div>
   </div>
 </div>
 
@@ -310,13 +608,48 @@
     <div class="slide-title">HackerNews — AI Security</div>
     <div class="slide-divider"></div>
   </div>
-  <div class="items"><div class="item"><div class="item-dot"></div><div class="item-text"><strong><a href="https://github.com/golf-mcp/golf-scanner">Show HN: Golf Scanner – OSS tool to find and audit every MCP server</a></strong><div class="item-desc">🔥 3 points on Hacker News</div></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong><a href="https://github.com/sastrophy/siteiq">Show HN: SiteIQ – LLM and Web security testing tool (built by a high schooler)</a></strong><div class="item-desc">🔥 4 points on Hacker News</div></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong><a href="https://github.com/Agastya910/agentarmor">Show HN: AgentArmor – open-source 8-layer security framework for AI agents</a></strong><div class="item-desc">🔥 10 points on Hacker News</div></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong><a href="https://stryda.online">Show HN: Stryda – I built a Red Teaming tool for LLMs at 14yo</a></strong><div class="item-desc">🔥 1 points on Hacker News</div></div></div></div>
+  <div class="items"><div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="https://github.com/golf-mcp/golf-scanner">Show HN: Golf Scanner – OSS tool to find and audit every MCP server</a></div>
+    <div class="item-summary">3 points on Hacker News</div>
+    <div class="item-source">HackerNews — AI Security</div>
+    <div class="item-link"><a href="https://github.com/golf-mcp/golf-scanner">Read → https://github.com/golf-mcp/golf-scanner</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="https://github.com/sastrophy/siteiq">Show HN: SiteIQ – LLM and Web security testing tool (built by a high schooler)</a></div>
+    <div class="item-summary">4 points on Hacker News</div>
+    <div class="item-source">HackerNews — AI Security</div>
+    <div class="item-link"><a href="https://github.com/sastrophy/siteiq">Read → https://github.com/sastrophy/siteiq</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="https://github.com/Agastya910/agentarmor">Show HN: AgentArmor – open-source 8-layer security framework for AI agents</a></div>
+    <div class="item-summary">10 points on Hacker News</div>
+    <div class="item-source">HackerNews — AI Security</div>
+    <div class="item-link"><a href="https://github.com/Agastya910/agentarmor">Read → https://github.com/Agastya910/agentarmor</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="https://stryda.online">Show HN: Stryda – I built a Red Teaming tool for LLMs at 14yo</a></div>
+    <div class="item-summary">1 points on Hacker News</div>
+    <div class="item-source">HackerNews — AI Security</div>
+    <div class="item-link"><a href="https://stryda.online">Read → https://stryda.online</a></div>
+  </div>
+</div></div>
   <div class="slide-footer">
     <div>
       <div class="footer-name">Koral Shimoni</div>
       <div class="footer-title">AI Security Architect & Manager</div>
     </div>
-    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 8/11</div>
+    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 10/12</div>
   </div>
 </div>
 
@@ -327,43 +660,61 @@
     <div class="slide-title">HackerNews — Agentic AI</div>
     <div class="slide-divider"></div>
   </div>
-  <div class="items"><div class="item"><div class="item-dot"></div><div class="item-text"><strong><a href="https://github.com/guard0-ai/g0">Show HN: G0 – The control layer for AI agents (scan, test, monitor, comply)</a></strong><div class="item-desc">🔥 4 points on Hacker News</div></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong><a href="https://github.com/Agastya910/agentarmor">Show HN: AgentArmor – open-source 8-layer security framework for AI agents</a></strong><div class="item-desc">🔥 10 points on Hacker News</div></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong><a href="https://agentictrust.com">Show HN: Agentic Trust – Enterprise MCP Server Platform for Secure AI Agents</a></strong><div class="item-desc">🔥 4 points on Hacker News</div></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong><a href="https://github.com/kidigapeet/Raypher-core">Show HN: Raypher–eBPF-based runtime security and hardware identity for AI agents</a></strong><div class="item-desc">🔥 2 points on Hacker News</div></div></div></div>
+  <div class="items"><div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="https://github.com/guard0-ai/g0">Show HN: G0 – The control layer for AI agents (scan, test, monitor, comply)</a></div>
+    <div class="item-summary">4 points on Hacker News</div>
+    <div class="item-source">HackerNews — Agentic AI</div>
+    <div class="item-link"><a href="https://github.com/guard0-ai/g0">Read → https://github.com/guard0-ai/g0</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="https://github.com/Agastya910/agentarmor">Show HN: AgentArmor – open-source 8-layer security framework for AI agents</a></div>
+    <div class="item-summary">10 points on Hacker News</div>
+    <div class="item-source">HackerNews — Agentic AI</div>
+    <div class="item-link"><a href="https://github.com/Agastya910/agentarmor">Read → https://github.com/Agastya910/agentarmor</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="https://agentictrust.com">Show HN: Agentic Trust – Enterprise MCP Server Platform for Secure AI Agents</a></div>
+    <div class="item-summary">4 points on Hacker News</div>
+    <div class="item-source">HackerNews — Agentic AI</div>
+    <div class="item-link"><a href="https://agentictrust.com">Read → https://agentictrust.com</a></div>
+  </div>
+</div>
+<div class="item">
+  <div class="item-badge">🟡</div>
+  <div class="item-body">
+    <div class="item-title"><a href="https://github.com/kidigapeet/Raypher-core">Show HN: Raypher–eBPF-based runtime security and hardware identity for AI agents</a></div>
+    <div class="item-summary">2 points on Hacker News</div>
+    <div class="item-source">HackerNews — Agentic AI</div>
+    <div class="item-link"><a href="https://github.com/kidigapeet/Raypher-core">Read → https://github.com/kidigapeet/Raypher-core</a></div>
+  </div>
+</div></div>
   <div class="slide-footer">
     <div>
       <div class="footer-name">Koral Shimoni</div>
       <div class="footer-title">AI Security Architect & Manager</div>
     </div>
-    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 9/11</div>
+    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 11/12</div>
   </div>
 </div>
 
 <div class="slide" style="background:#0d3b2e; --bg:#0d3b2e; --accent:#00d4aa;">
   <div class="slide-header">
-    <span class="slide-tag">AI Security Intel</span>
-    <span class="slide-icon">🌐</span>
-    <div class="slide-title">The Weather Report — AI</div>
-    <div class="slide-divider"></div>
-  </div>
-  <div class="items"><div class="item"><div class="item-dot"></div><div class="item-text"><strong>The Weather Report</strong></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong>Vercel Breach Deep Dive That Doesn&#x27;t Sell You a Security Product</strong><div class="item-desc">A Vercel employee signed up for a third-party AI productivity tool using their corporate Google Workspace account. Two months later, that single grant became exfiltration of plaintext customer environment variables from Vercel&#x27;s internal…</div></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong>Mozilla&#x27;s AI Vulnerability Win Only Works If You Are the Software</strong><div class="item-desc">Mozilla concluded &quot;no category...humans can find that this model can&#x27;t&quot; and &quot;defenders finally have a chance to win, decisively.&quot; True if you own your stack. For banks, hospitals, and utilities running vendor code they…</div></div></div><div class="item"><div class="item-dot"></div><div class="item-text"><strong>LLMs can barely obfuscate XSS. Here&#x27;s what that teaches us.</strong><div class="item-desc">Penn State researchers fine-tuned an LLM to generate obfuscated XSS payloads. Only 22% of outputs actually execute as XSS, up from 15% before fine-tuning. Runtime execution is the only honest validator for synthetically generated obfuscated XSS…</div></div></div></div>
-  <div class="slide-footer">
-    <div>
-      <div class="footer-name">Koral Shimoni</div>
-      <div class="footer-title">AI Security Architect & Manager</div>
-    </div>
-    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 10/11</div>
-  </div>
-</div>
-
-<div class="slide" style="background:#1a1a2e; --bg:#1a1a2e; --accent:#e94560;">
-  <div class="slide-header">
     <span class="slide-tag">Stay Sharp</span>
     <div class="slide-title" style="margin-top:40px;">Follow for daily<br/>AI security intel</div>
     <div class="slide-divider"></div>
-    <div style="font-size:17px; color:#7090a0; line-height:2; margin-top:20px;">
-      🔐 Prompt Injection &amp; Agentic AI<br/>
+    <div style="font-size:17px; color:#7090a0; line-height:2.2; margin-top:20px;">
+      🔐 MCP · RAG · Agentic AI · Prompt Injection<br/>
       📄 Latest Research Papers<br/>
       🛡️ OWASP · MITRE ATLAS · NIST AI RMF<br/>
-      ⚡ Nvidia · Anthropic · DeepMind updates
+      ⚡ Nvidia · Anthropic · DeepMind
     </div>
   </div>
   <div class="slide-footer">
@@ -371,7 +722,7 @@
       <div class="footer-name">Koral Shimoni</div>
       <div class="footer-title">AI Security Architect &amp; Manager · linkedin.com/in/koral-shimoni-mor</div>
     </div>
-    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 11/11</div>
+    <div class="footer-date">2026-04-24 &nbsp;·&nbsp; 12/12</div>
   </div>
 </div>
 </body>
