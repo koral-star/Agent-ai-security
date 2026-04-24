@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 """
-AI Security Daily Digest
-Koral Shimoni — Stay at the cutting edge of AI security
-
-Saves digest to: digests/YYYY-MM-DD.md  (raw data)
-                 digests/YYYY-MM-DD.html (LinkedIn-ready presentation)
+AI Security Daily Digest — Koral Shimoni
+Sources: arXiv API + RSS + HackerNews API
+AI Layer: Claude ranks every item by relevance to your OneZero work
+Output:  digests/YYYY-MM-DD.html  (morning presentation)
+         digests/YYYY-MM-DD.md    (raw)
+         digests/YYYY-MM-DD_ntfy.json (ranked notifications)
 """
 
 import urllib.request
 import json
 import re
+import os
+import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -18,51 +21,74 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; AISecurityDigest/1.0)"}
 
+# ── Koral's context — used by Claude for ranking ──────────────────────────────
+
+KORAL_CONTEXT = """
+Koral is Senior AI Security Architect & Manager at OneZero Bank (fintech).
+Daily work:
+- MCP security: tool poisoning, context injection, tool call forgery in production
+- RAG security: securing Ella Chat (production RAG+LLM), corpus poisoning, retrieval manipulation
+- Prompt injection (direct + indirect) in agentic systems
+- AI SDLC: security gates from model selection to deployment
+- Code AI extensions: threat modeling Copilot, Claude Code, AI-powered dev tools
+- Agentic AI attacks: agent hijacking, multi-agent trust boundaries
+- Frameworks applied daily: OWASP LLM Top 10, MITRE ATLAS, NIST AI RMF
+
+Career goal: be on cutting edge of AI security, targeting Nvidia-level architect roles.
+High priority: novel attacks, new vulnerabilities, MCP/RAG/agentic AI, practical exploitation, new standards.
+Low priority: general AI product news, events, conferences, non-security topics.
+"""
+
+# ── Sources ───────────────────────────────────────────────────────────────────
+
 SOURCES = {
-    "arXiv — AI Security Papers": {
-        "url": "https://arxiv.org/search/?searchtype=all&query=prompt+injection+OR+LLM+security+OR+agentic+AI+security+OR+RAG+security+OR+adversarial+LLM&start=0",
-        "type": "arxiv",
+    "arXiv — AI Security": {
+        "url": "https://export.arxiv.org/api/query?search_query=all:prompt+injection+OR+LLM+security+OR+agentic+AI+security+OR+RAG+security+OR+adversarial+LLM&sortBy=submittedDate&sortOrder=descending&max_results=8",
+        "type": "arxiv_api",
         "icon": "📄",
     },
-    "arXiv — MCP & Agent Security": {
-        "url": "https://arxiv.org/search/?searchtype=all&query=model+context+protocol+security+OR+agentic+AI+attack+OR+tool+poisoning&start=0",
-        "type": "arxiv",
+    "arXiv — MCP & Agents": {
+        "url": "https://export.arxiv.org/api/query?search_query=all:model+context+protocol+security+OR+agentic+AI+attack+OR+tool+poisoning+OR+LLM+agent+attack&sortBy=submittedDate&sortOrder=descending&max_results=8",
+        "type": "arxiv_api",
         "icon": "🤖",
+    },
+    "Anthropic Safety": {
+        "url": "https://www.anthropic.com/rss.xml",
+        "type": "rss",
+        "icon": "🔬",
+        "fallback": "https://www.anthropic.com/research",
+    },
+    "Google DeepMind": {
+        "url": "https://blog.google/technology/google-deepmind/rss/",
+        "type": "rss",
+        "icon": "🧠",
+        "fallback": "https://deepmind.google/research/publications/",
+    },
+    "Nvidia AI Security": {
+        "url": "https://developer.nvidia.com/blog/tag/security/feed/",
+        "type": "rss",
+        "icon": "⚡",
+        "fallback": "https://developer.nvidia.com/blog/tag/security/",
     },
     "OWASP GenAI": {
         "url": "https://genai.owasp.org",
         "type": "html",
         "icon": "🛡️",
     },
-    "Nvidia AI Security Blog": {
-        "url": "https://developer.nvidia.com/blog/tag/security/",
-        "type": "html",
-        "icon": "⚡",
-    },
-    "Anthropic Safety": {
-        "url": "https://www.anthropic.com/research",
-        "type": "html",
-        "icon": "🔬",
-    },
-    "Google DeepMind Safety": {
-        "url": "https://deepmind.google/research/publications/",
-        "type": "html",
-        "icon": "🧠",
-    },
-    "HackerNews — AI Security": {
-        "url": "https://hn.algolia.com/api/v1/search?query=AI+security+LLM+prompt+injection&tags=story&hitsPerPage=8",
-        "type": "hn_api",
-        "icon": "🔥",
-    },
-    "HackerNews — Agentic AI": {
-        "url": "https://hn.algolia.com/api/v1/search?query=agentic+AI+MCP+security+attack&tags=story&hitsPerPage=8",
-        "type": "hn_api",
-        "icon": "🕵️",
-    },
     "The Weather Report — AI": {
         "url": "https://theweatherreport.ai",
         "type": "html",
         "icon": "🌐",
+    },
+    "HackerNews — AI Security": {
+        "url": "https://hn.algolia.com/api/v1/search?query=AI+security+LLM+prompt+injection&tags=story&hitsPerPage=10",
+        "type": "hn_api",
+        "icon": "🔥",
+    },
+    "HackerNews — Agentic AI": {
+        "url": "https://hn.algolia.com/api/v1/search?query=agentic+AI+MCP+security+attack&tags=story&hitsPerPage=10",
+        "type": "hn_api",
+        "icon": "🕵️",
     },
 }
 
@@ -76,33 +102,63 @@ def fetch(url):
     except Exception as e:
         return f"ERROR: {e}"
 
-def parse_arxiv(html):
+# ── Parsers — all return [{title, desc, link}] ────────────────────────────────
+
+def parse_arxiv_api(xml_text):
     results = []
-    titles = re.findall(r'class="title[^"]*"[^>]*>(.*?)</span>', html, re.DOTALL)
-    abstracts = re.findall(r'class="abstract-short[^"]*"[^>]*>(.*?)</span>', html, re.DOTALL)
-    links = re.findall(r'href="(/abs/[^"]+)"', html)
-    for i, title in enumerate(titles[:5]):
-        title = re.sub(r'<[^>]+>', '', title).strip()
-        abstract = re.sub(r'<[^>]+>', '', abstracts[i]).strip()[:200] if i < len(abstracts) else ""
-        link = f"https://arxiv.org{links[i]}" if i < len(links) else ""
-        if title and len(title) > 10:
-            results.append({"title": title, "abstract": abstract, "link": link})
+    try:
+        root = ET.fromstring(xml_text)
+        ns = "http://www.w3.org/2005/Atom"
+        for entry in root.findall(f"{{{ns}}}entry")[:6]:
+            title_el = entry.find(f"{{{ns}}}title")
+            summary_el = entry.find(f"{{{ns}}}summary")
+            id_el = entry.find(f"{{{ns}}}id")
+            title = re.sub(r'\s+', ' ', title_el.text or "").strip() if title_el is not None else ""
+            desc = re.sub(r'\s+', ' ', summary_el.text or "").strip()[:300] if summary_el is not None else ""
+            if desc and not desc.endswith("."):
+                desc = desc.rsplit(" ", 1)[0] + "…"
+            link = (id_el.text or "").strip() if id_el is not None else ""
+            if title:
+                results.append({"title": title, "desc": desc, "link": link})
+    except Exception as e:
+        print(f"arXiv parse error: {e}")
     return results
 
-def parse_hn(json_text):
+def parse_rss(xml_text):
+    results = []
     try:
-        data = json.loads(json_text)
-        return [{"title": h.get("title",""), "link": h.get("url", f"https://news.ycombinator.com/item?id={h.get('objectID','')}"), "points": h.get("points",0)} for h in data.get("hits",[])[:6]]
-    except:
-        return []
+        root = ET.fromstring(xml_text)
+        atom_ns = "http://www.w3.org/2005/Atom"
+        entries = root.findall(f".//{{{atom_ns}}}entry")
+        if entries:
+            for entry in entries[:5]:
+                title_el = entry.find(f"{{{atom_ns}}}title")
+                summary_el = entry.find(f"{{{atom_ns}}}summary") or entry.find(f"{{{atom_ns}}}content")
+                link_el = entry.find(f"{{{atom_ns}}}link")
+                t = (title_el.text or "").strip() if title_el is not None else ""
+                d = re.sub(r'<[^>]+>', '', summary_el.text or "").strip()[:280] if summary_el is not None else ""
+                l = link_el.get("href", "") if link_el is not None else ""
+                if t:
+                    results.append({"title": t, "desc": d, "link": l})
+        else:
+            for item in root.findall(".//item")[:5]:
+                def gt(tag):
+                    el = item.find(tag)
+                    return (el.text or "").strip() if el is not None else ""
+                t = gt("title")
+                d = re.sub(r'<[^>]+>', '', gt("description")).strip()[:280]
+                l = gt("link")
+                if t:
+                    results.append({"title": t, "desc": d, "link": l})
+    except Exception as e:
+        print(f"RSS parse error: {e}")
+    return results
 
 EVENT_SKIP = {"webinar", "conference", "meetup", "register", "summit", "workshop",
               "join us", "sign up", "free event", "live session", "agenda", "speaker"}
 
 def parse_html_content(html):
-    """Parse headlines + first nearby paragraph as description. Skip events."""
     results = []
-    # Split on heading tags and capture what follows each
     blocks = re.split(r'(<h[1-4][^>]*>.*?</h[1-4]>)', html, flags=re.DOTALL | re.IGNORECASE)
     for i, block in enumerate(blocks):
         if not re.match(r'<h[1-4]', block, re.IGNORECASE):
@@ -112,7 +168,6 @@ def parse_html_content(html):
             continue
         if any(kw in title.lower() for kw in EVENT_SKIP):
             continue
-        # Grab first <p> from the content that follows this heading
         following = blocks[i + 1] if i + 1 < len(blocks) else ""
         desc = ""
         for p in re.findall(r'<p[^>]*>(.*?)</p>', following[:1000], re.DOTALL | re.IGNORECASE):
@@ -122,7 +177,6 @@ def parse_html_content(html):
                 if not desc.endswith("."):
                     desc = desc.rsplit(" ", 1)[0] + "…"
                 break
-        # Extract link from the heading block
         link_match = re.search(r'href="(https?://[^"]+)"', block)
         link = link_match.group(1) if link_match else ""
         results.append({"title": title, "desc": desc, "link": link})
@@ -130,7 +184,108 @@ def parse_html_content(html):
             break
     return results
 
-# ── HTML Presentation Builder ─────────────────────────────────────────────────
+def parse_hn(json_text):
+    try:
+        data = json.loads(json_text)
+        return [{"title": h.get("title", ""),
+                 "desc": f"{h.get('points', 0)} points on Hacker News",
+                 "link": h.get("url") or f"https://news.ycombinator.com/item?id={h.get('objectID', '')}"}
+                for h in data.get("hits", [])[:6] if h.get("title")]
+    except:
+        return []
+
+def extract_items(config, data):
+    if not data or (isinstance(data, str) and data.startswith("ERROR")):
+        fallback = config.get("fallback")
+        if fallback:
+            fd = fetch(fallback)
+            if not fd.startswith("ERROR"):
+                return parse_html_content(fd)
+        return []
+    t = config["type"]
+    if t == "arxiv_api":
+        return parse_arxiv_api(data)
+    elif t == "rss":
+        items = parse_rss(data)
+        if not items:
+            fallback = config.get("fallback")
+            if fallback:
+                fd = fetch(fallback)
+                if not fd.startswith("ERROR"):
+                    return parse_html_content(fd)
+        return items
+    elif t == "hn_api":
+        return parse_hn(data)
+    else:
+        return parse_html_content(data)
+
+# ── Claude ranking ─────────────────────────────────────────────────────────────
+
+def rank_with_claude(flat_items):
+    """
+    flat_items: list of {source, icon, title, desc, link}
+    Returns same list enriched with {score, summary, badge} and sorted high→low.
+    Falls back gracefully if no API key.
+    """
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not api_key or not flat_items:
+        for item in flat_items:
+            item["score"] = 5
+            item["summary"] = item.get("desc", "")
+            item["badge"] = "🟡"
+        return flat_items
+
+    try:
+        import anthropic
+        client = anthropic.Anthropic(api_key=api_key)
+
+        items_text = "\n".join(
+            f'[{i}] {it["source"]}\nTitle: {it["title"]}\nDesc: {it.get("desc","")[:180]}'
+            for i, it in enumerate(flat_items)
+        )
+
+        prompt = f"""You are briefing a Senior AI Security Architect. Here is her context:
+{KORAL_CONTEXT}
+
+For each news item below, return a JSON array with:
+- idx: item index
+- score: 1-10 relevance to her daily work (10=directly hits MCP/RAG/agentic/prompt injection)
+- summary: ONE sentence max 160 chars — why THIS matters to HER specifically, practical and direct
+
+Return ONLY a JSON array, no markdown, no explanation.
+
+Items:
+{items_text}"""
+
+        response = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=4000,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        raw = response.content[0].text.strip()
+        json_match = re.search(r'\[.*\]', raw, re.DOTALL)
+        rankings = json.loads(json_match.group()) if json_match else []
+
+        rank_map = {r["idx"]: r for r in rankings}
+        for i, item in enumerate(flat_items):
+            r = rank_map.get(i, {})
+            item["score"] = r.get("score", 5)
+            item["summary"] = r.get("summary", item.get("desc", ""))
+            item["badge"] = "🔴" if item["score"] >= 7 else ("🟡" if item["score"] >= 4 else "🟢")
+
+        flat_items.sort(key=lambda x: x["score"], reverse=True)
+        print(f"Claude ranked {len(flat_items)} items")
+
+    except Exception as e:
+        print(f"Claude ranking error (falling back): {e}")
+        for item in flat_items:
+            item.setdefault("score", 5)
+            item.setdefault("summary", item.get("desc", ""))
+            item.setdefault("badge", "🟡")
+
+    return flat_items
+
+# ── HTML Presentation ─────────────────────────────────────────────────────────
 
 SLIDE_COLORS = [
     ("#0f2d48", "#5bc8f5"),
@@ -141,6 +296,8 @@ SLIDE_COLORS = [
     ("#0f2d48", "#5bc8f5"),
     ("#1a1a2e", "#e94560"),
     ("#0d3b2e", "#00d4aa"),
+    ("#2d1b4e", "#b57bee"),
+    ("#2d2010", "#f5a623"),
 ]
 
 HTML_TEMPLATE = """<!DOCTYPE html>
@@ -153,7 +310,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
   .slide {{
     width: 1080px;
-    height: 1080px;
+    min-height: 1080px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -195,11 +352,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   }}
 
   .slide-title {{
-    font-size: 38px;
+    font-size: 36px;
     font-weight: 800;
     color: #ffffff;
     line-height: 1.15;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }}
 
   .slide-divider {{
@@ -207,7 +364,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     height: 3px;
     background: var(--accent);
     border-radius: 2px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }}
 
   .items {{ z-index: 1; flex: 1; }}
@@ -216,49 +373,59 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     display: flex;
     align-items: flex-start;
     gap: 14px;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
+    border-left: 2px solid rgba(255,255,255,0.06);
+    padding-left: 14px;
   }}
 
-  .item-dot {{
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
+  .item-badge {{
+    font-size: 16px;
     flex-shrink: 0;
-    margin-top: 7px;
+    margin-top: 2px;
   }}
 
-  .item-text {{
-    font-size: 17px;
-    color: #d0e0f0;
-    line-height: 1.5;
+  .item-body {{ flex: 1; }}
+
+  .item-title {{
+    font-size: 16px;
+    font-weight: 700;
+    color: #e8f0f7;
+    line-height: 1.4;
   }}
 
-  .item-text a {{
-    color: var(--accent);
+  .item-title a {{
+    color: #e8f0f7;
     text-decoration: none;
   }}
 
-  .item-sub {{
-    font-size: 13px;
-    color: #7090a0;
-    margin-top: 3px;
-  }}
-
-  .item-desc {{
+  .item-summary {{
     font-size: 13px;
     color: #8aa8bc;
-    margin-top: 6px;
+    margin-top: 5px;
     line-height: 1.55;
   }}
 
-  .item-desc a {{
+  .item-link {{
+    font-size: 12px;
+    margin-top: 4px;
+  }}
+
+  .item-link a {{
     color: var(--accent);
     text-decoration: none;
     font-weight: 600;
   }}
 
+  .item-source {{
+    font-size: 11px;
+    color: #4a6070;
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }}
+
   .no-data {{
-    font-size: 16px;
+    font-size: 15px;
     color: #4a6070;
     font-style: italic;
   }}
@@ -270,6 +437,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     align-items: center;
     border-top: 1px solid rgba(255,255,255,0.08);
     padding-top: 20px;
+    margin-top: 24px;
   }}
 
   .footer-name {{
@@ -289,7 +457,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     color: #4a6070;
   }}
 
-  /* Cover slide */
   .cover .slide-title {{ font-size: 52px; }}
   .cover .cover-sub {{
     font-size: 20px;
@@ -323,25 +490,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </body>
 </html>"""
 
-def make_slide(bg, accent, tag, icon, title, items_html, date, slide_num, total):
-    return f"""
-<div class="slide" style="background:{bg}; --bg:{bg}; --accent:{accent};">
-  <div class="slide-header">
-    <span class="slide-tag">{tag}</span>
-    <span class="slide-icon">{icon}</span>
-    <div class="slide-title">{title}</div>
-    <div class="slide-divider"></div>
-  </div>
-  <div class="items">{items_html}</div>
-  <div class="slide-footer">
-    <div>
-      <div class="footer-name">Koral Shimoni</div>
-      <div class="footer-title">AI Security Architect & Manager</div>
-    </div>
-    <div class="footer-date">{date} &nbsp;·&nbsp; {slide_num}/{total}</div>
-  </div>
-</div>"""
-
 def make_cover(bg, accent, date, total):
     return f"""
 <div class="slide cover" style="background:{bg}; --bg:{bg}; --accent:{accent};">
@@ -349,15 +497,16 @@ def make_cover(bg, accent, date, total):
     <span class="slide-tag">Daily Intelligence</span>
     <div class="slide-title">🔐 AI Security<br/>Digest</div>
     <div class="cover-sub">
-      What you need to know in AI security today.<br/>
-      Prompt injection · Agentic AI · RAG · MCP · LLM attacks
+      Ranked by relevance to your work at OneZero.<br/>
+      🔴 Must read &nbsp;·&nbsp; 🟡 Worth knowing &nbsp;·&nbsp; 🟢 Background
     </div>
     <div class="cover-topics">
-      <span class="topic-chip">📄 New Research Papers</span>
-      <span class="topic-chip">🛡️ OWASP Updates</span>
+      <span class="topic-chip">📄 arXiv Papers</span>
+      <span class="topic-chip">🛡️ OWASP GenAI</span>
       <span class="topic-chip">⚡ Nvidia Security</span>
-      <span class="topic-chip">🔬 Anthropic Safety</span>
+      <span class="topic-chip">🔬 Anthropic</span>
       <span class="topic-chip">🧠 DeepMind</span>
+      <span class="topic-chip">🌐 Weather Report</span>
       <span class="topic-chip">🔥 HackerNews</span>
     </div>
   </div>
@@ -370,65 +519,94 @@ def make_cover(bg, accent, date, total):
   </div>
 </div>"""
 
-def build_items_html(source_name, config, data):
-    html_items = ""
-    if not data or (isinstance(data, str) and data.startswith("ERROR")):
-        html_items = '<div class="no-data">No new content today — check source directly.</div>'
-    elif config["type"] == "arxiv":
-        papers = parse_arxiv(data)
-        if papers:
-            for p in papers[:4]:
-                link_html = f' <a href="{p["link"]}">Read →</a>' if p["link"] else ""
-                abstract = p["abstract"][:220]
-                if abstract and not abstract.endswith("."):
-                    abstract = abstract.rsplit(" ", 1)[0] + "…"
-                desc = f'<div class="item-desc">{abstract}{link_html}</div>' if abstract else link_html
-                html_items += f'<div class="item"><div class="item-dot"></div><div class="item-text"><strong>{p["title"]}</strong>{desc}</div></div>'
-        else:
-            html_items = '<div class="no-data">No new papers today.</div>'
-    elif config["type"] == "hn_api":
-        stories = parse_hn(data)
-        if stories:
-            for s in stories[:4]:
-                pts = f'<div class="item-desc">🔥 {s["points"]} points on Hacker News</div>'
-                title_html = f'<a href="{s["link"]}">{s["title"]}</a>' if s["link"] else s["title"]
-                html_items += f'<div class="item"><div class="item-dot"></div><div class="item-text"><strong>{title_html}</strong>{pts}</div></div>'
-        else:
-            html_items = '<div class="no-data">No trending stories today.</div>'
+def item_html(it):
+    link_html = f'<div class="item-link"><a href="{it["link"]}">Read → {it["link"][:60]}{"…" if len(it["link"]) > 60 else ""}</a></div>' if it.get("link") else ""
+    summary = it.get("summary") or it.get("desc", "")
+    summary_html = f'<div class="item-summary">{summary}</div>' if summary else ""
+    source_html = f'<div class="item-source">{it.get("source", "")}</div>'
+    title_content = f'<a href="{it["link"]}">{it["title"]}</a>' if it.get("link") else it["title"]
+    return f"""<div class="item">
+  <div class="item-badge">{it.get("badge", "🟡")}</div>
+  <div class="item-body">
+    <div class="item-title">{title_content}</div>
+    {summary_html}
+    {source_html}
+    {link_html}
+  </div>
+</div>"""
+
+def make_top_slide(bg, accent, date, total, ranked_items):
+    top5 = [it for it in ranked_items if it.get("badge") == "🔴"][:5]
+    if not top5:
+        top5 = ranked_items[:5]
+    items_html = "\n".join(item_html(it) for it in top5) or '<div class="no-data">No high-priority items today.</div>'
+    return f"""
+<div class="slide" style="background:{bg}; --bg:{bg}; --accent:{accent};">
+  <div class="slide-header">
+    <span class="slide-tag">🔴 Must Read Today</span>
+    <div class="slide-title">Top Priorities</div>
+    <div class="slide-divider"></div>
+  </div>
+  <div class="items">{items_html}</div>
+  <div class="slide-footer">
+    <div>
+      <div class="footer-name">Koral Shimoni</div>
+      <div class="footer-title">AI Security Architect & Manager</div>
+    </div>
+    <div class="footer-date">{date} &nbsp;·&nbsp; 2/{total}</div>
+  </div>
+</div>"""
+
+def make_source_slide(bg, accent, date, slide_num, total, source_name, icon, items):
+    if not items:
+        items_html = '<div class="no-data">No new content today.</div>'
     else:
-        items = parse_html_content(data)
-        if items:
-            for it in items:
-                link_html = f' <a href="{it["link"]}">Read →</a>' if it["link"] else ""
-                desc = f'<div class="item-desc">{it["desc"]}{link_html}</div>' if it["desc"] else ""
-                html_items += f'<div class="item"><div class="item-dot"></div><div class="item-text"><strong>{it["title"]}</strong>{desc}</div></div>'
-        else:
-            html_items = f'<div class="no-data">No updates today — <a href="{config["url"]}">check source directly</a>.</div>'
-    return html_items
+        items_html = "\n".join(item_html(it) for it in items[:4])
+    return f"""
+<div class="slide" style="background:{bg}; --bg:{bg}; --accent:{accent};">
+  <div class="slide-header">
+    <span class="slide-tag">AI Security Intel</span>
+    <span class="slide-icon">{icon}</span>
+    <div class="slide-title">{source_name}</div>
+    <div class="slide-divider"></div>
+  </div>
+  <div class="items">{items_html}</div>
+  <div class="slide-footer">
+    <div>
+      <div class="footer-name">Koral Shimoni</div>
+      <div class="footer-title">AI Security Architect & Manager</div>
+    </div>
+    <div class="footer-date">{date} &nbsp;·&nbsp; {slide_num}/{total}</div>
+  </div>
+</div>"""
 
-def build_html_presentation(source_data, date):
-    total_slides = len(source_data) + 2  # cover + sources + closing
-    slides = [make_cover(SLIDE_COLORS[0][0], SLIDE_COLORS[0][1], date, total_slides)]
+def build_html_presentation(source_items, ranked_items, date):
+    # cover + top slide + one per source + closing
+    total = 2 + len(source_items) + 1
+    slides = [make_cover(SLIDE_COLORS[0][0], SLIDE_COLORS[0][1], date, total)]
 
-    for i, (source_name, config, data) in enumerate(source_data, start=2):
-        bg, accent = SLIDE_COLORS[i % len(SLIDE_COLORS)]
-        items_html = build_items_html(source_name, config, data)
-        slide = make_slide(bg, accent, "AI Security Intel", config["icon"], source_name, items_html, date, i, total_slides)
-        slides.append(slide)
-
-    # Closing slide
+    # Top priorities slide
     bg, accent = SLIDE_COLORS[1]
+    slides.append(make_top_slide(bg, accent, date, total, ranked_items))
+
+    # Per-source slides
+    for i, (source_name, icon, items) in enumerate(source_items, start=3):
+        bg, accent = SLIDE_COLORS[i % len(SLIDE_COLORS)]
+        slides.append(make_source_slide(bg, accent, date, i, total, source_name, icon, items))
+
+    # Closing
+    bg, accent = SLIDE_COLORS[2]
     closing = f"""
 <div class="slide" style="background:{bg}; --bg:{bg}; --accent:{accent};">
   <div class="slide-header">
     <span class="slide-tag">Stay Sharp</span>
     <div class="slide-title" style="margin-top:40px;">Follow for daily<br/>AI security intel</div>
     <div class="slide-divider"></div>
-    <div style="font-size:17px; color:#7090a0; line-height:2; margin-top:20px;">
-      🔐 Prompt Injection &amp; Agentic AI<br/>
+    <div style="font-size:17px; color:#7090a0; line-height:2.2; margin-top:20px;">
+      🔐 MCP · RAG · Agentic AI · Prompt Injection<br/>
       📄 Latest Research Papers<br/>
       🛡️ OWASP · MITRE ATLAS · NIST AI RMF<br/>
-      ⚡ Nvidia · Anthropic · DeepMind updates
+      ⚡ Nvidia · Anthropic · DeepMind
     </div>
   </div>
   <div class="slide-footer">
@@ -436,76 +614,60 @@ def build_html_presentation(source_data, date):
       <div class="footer-name">Koral Shimoni</div>
       <div class="footer-title">AI Security Architect &amp; Manager · linkedin.com/in/koral-shimoni-mor</div>
     </div>
-    <div class="footer-date">{date} &nbsp;·&nbsp; {total_slides}/{total_slides}</div>
+    <div class="footer-date">{date} &nbsp;·&nbsp; {total}/{total}</div>
   </div>
 </div>"""
     slides.append(closing)
     return HTML_TEMPLATE.format(slides="\n".join(slides))
 
-# ── Main ──────────────────────────────────────────────────────────────────────
+# ── ntfy notifications ────────────────────────────────────────────────────────
 
-def build_ntfy_notifications(source_data):
-    """One notification per item — short description + link, like a LinkedIn post snippet."""
+def build_ntfy_notifications(ranked_items):
+    """High + medium priority items only. Summary on first line so it shows in notification preview."""
     notifications = []
-    for source_name, config, data in source_data:
-        if not data or (isinstance(data, str) and data.startswith("ERROR")):
+    for it in ranked_items:
+        if it.get("score", 5) < 4:
             continue
-        icon = config["icon"]
-        if config["type"] == "arxiv":
-            for p in parse_arxiv(data)[:3]:
-                if not p["title"]:
-                    continue
-                body_parts = [p["title"]]
-                if p["abstract"]:
-                    # One clean sentence from the abstract
-                    snippet = p["abstract"][:180].rstrip()
-                    if not snippet.endswith("."):
-                        snippet = snippet.rsplit(" ", 1)[0] + "…"
-                    body_parts.append(snippet)
-                if p["link"]:
-                    body_parts.append(p["link"])
-                notifications.append({
-                    "title": f"{icon} {source_name}",
-                    "body": "\n\n".join(body_parts)
-                })
-        elif config["type"] == "hn_api":
-            for s in parse_hn(data)[:3]:
-                if not s["title"]:
-                    continue
-                body_parts = [s["title"], f"🔥 {s['points']} points on Hacker News"]
-                if s["link"]:
-                    body_parts.append(s["link"])
-                notifications.append({
-                    "title": f"{icon} {source_name}",
-                    "body": "\n\n".join(body_parts)
-                })
-        else:
-            for it in parse_html_content(data)[:2]:
-                body_parts = [it["title"]]
-                if it["desc"]:
-                    body_parts.append(it["desc"])
-                body_parts.append(it["link"] if it["link"] else config["url"])
-                notifications.append({
-                    "title": f"{icon} {source_name}",
-                    "body": "\n\n".join(body_parts)
-                })
+        badge = it.get("badge", "🟡")
+        summary = it.get("summary") or it.get("desc", "")
+        link = it.get("link", "")
+        # First line visible in notification preview = badge + summary
+        body_parts = [f'{badge} {summary}']
+        if link:
+            body_parts.append(link)
+        notifications.append({
+            "title": f'{it.get("icon", "")} {it.get("source", "")} — {it["title"][:60]}',
+            "body": "\n".join(body_parts)
+        })
     return notifications
+
+# ── Main ──────────────────────────────────────────────────────────────────────
 
 def build_digest():
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    source_data = []
+    source_items = []   # [(source_name, icon, [items])]
+    flat_items = []     # all items flattened for Claude ranking
     md_lines = [f"# AI Security Daily Digest — {today}\n"]
 
     for source_name, config in SOURCES.items():
         print(f"Fetching: {source_name}...")
         data = fetch(config["url"])
-        source_data.append((source_name, config, data))
+        items = extract_items(config, data)
+        for it in items:
+            it["source"] = source_name
+            it["icon"] = config["icon"]
+        source_items.append((source_name, config["icon"], items))
+        flat_items.extend(items)
         md_lines.append(f"## {source_name}\n{config['url']}\n")
-        if data.startswith("ERROR"):
+        if isinstance(data, str) and data.startswith("ERROR"):
             md_lines.append(f"> {data}\n")
 
-    ntfy_notifications = build_ntfy_notifications(source_data)
-    return today, "\n".join(md_lines), build_html_presentation(source_data, today), ntfy_notifications
+    print(f"Ranking {len(flat_items)} items with Claude...")
+    ranked_items = rank_with_claude(flat_items)
+
+    html = build_html_presentation(source_items, ranked_items, today)
+    ntfy = build_ntfy_notifications(ranked_items)
+    return today, "\n".join(md_lines), html, ntfy
 
 if __name__ == "__main__":
     print("Building AI Security Daily Digest...")
@@ -520,7 +682,7 @@ if __name__ == "__main__":
     ntfy_file.write_text(json.dumps(ntfy_notifications, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(f"\n✅ Digest saved:")
-    print(f"   Markdown:     {md_file}")
     print(f"   Presentation: {html_file}")
-    print(f"   Notifications: {ntfy_file}")
-    print(f"\nOpen the HTML in Chrome → File → Print → Save as PDF → Upload to LinkedIn")
+    print(f"   Markdown:     {md_file}")
+    print(f"   Notifications: {ntfy_file} ({len(ntfy_notifications)} items)")
+    print(f"\nOpen the HTML in Chrome → Print → Save as PDF")

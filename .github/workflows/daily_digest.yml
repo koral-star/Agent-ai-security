@@ -28,8 +28,13 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install dependencies
+        run: pip install anthropic
+
       - name: Run digest script
         run: python3 daily_digest.py
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
       - name: Read digest content
         id: digest
