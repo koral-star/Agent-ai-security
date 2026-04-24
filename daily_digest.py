@@ -622,23 +622,43 @@ def build_html_presentation(source_items, ranked_items, date):
 
 # ── ntfy notifications ────────────────────────────────────────────────────────
 
-def build_ntfy_notifications(ranked_items):
-    """High + medium priority items only. Summary on first line so it shows in notification preview."""
+def build_ntfy_notifications(ranked_items, date):
+    """
+    Max 2 notifications per day:
+    1. 🔴 Must Read — top red items
+    2. 🟡 Worth Knowing — top yellow items
+    Each item: title + one-line summary + link
+    """
     notifications = []
-    for it in ranked_items:
-        if it.get("score", 5) < 4:
-            continue
-        badge = it.get("badge", "🟡")
-        summary = it.get("summary") or it.get("desc", "")
-        link = it.get("link", "")
-        # First line visible in notification preview = badge + summary
-        body_parts = [f'{badge} {summary}']
-        if link:
-            body_parts.append(link)
+
+    reds = [it for it in ranked_items if it.get("badge") == "🔴"][:4]
+    yellows = [it for it in ranked_items if it.get("badge") == "🟡"][:4]
+
+    def format_items(items):
+        lines = []
+        for it in items:
+            summary = it.get("summary") or it.get("desc", "")
+            link = it.get("link", "")
+            lines.append(f'• {it["title"][:70]}')
+            if summary:
+                lines.append(f'  {summary[:130]}')
+            if link:
+                lines.append(f'  {link}')
+            lines.append("")
+        return "\n".join(lines).strip()
+
+    if reds:
         notifications.append({
-            "title": f'{it.get("icon", "")} {it.get("source", "")} — {it["title"][:60]}',
-            "body": "\n".join(body_parts)
+            "title": f"🔴 AI Security — Must Read ({date})",
+            "body": format_items(reds)
         })
+
+    if yellows:
+        notifications.append({
+            "title": f"🟡 AI Security — Worth Knowing ({date})",
+            "body": format_items(yellows)
+        })
+
     return notifications
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -666,7 +686,7 @@ def build_digest():
     ranked_items = rank_with_claude(flat_items)
 
     html = build_html_presentation(source_items, ranked_items, today)
-    ntfy = build_ntfy_notifications(ranked_items)
+    ntfy = build_ntfy_notifications(ranked_items, today)
     return today, "\n".join(md_lines), html, ntfy
 
 if __name__ == "__main__":
