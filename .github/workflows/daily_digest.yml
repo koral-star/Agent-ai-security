@@ -137,6 +137,65 @@ jobs:
             sleep 2
           done
 
+      - name: Send Telegram morning brief
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: |
+          python3 << 'PYEOF'
+          import os, json, urllib.request, re
+
+          token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+          if not token:
+              print("No TELEGRAM_BOT_TOKEN set — skipping")
+              exit(0)
+
+          # Auto-discover chat ID from latest message sent to bot
+          with urllib.request.urlopen(f"https://api.telegram.org/bot{token}/getUpdates?limit=1&offset=-1") as r:
+              updates = json.loads(r.read())
+
+          results = updates.get("result", [])
+          if not results:
+              print("Bot has no messages yet — send any message to @koral_ai_security_bot first")
+              exit(0)
+
+          chat_id = results[-1]["message"]["chat"]["id"]
+
+          with open("/tmp/brief.md") as f:
+              brief = f.read()
+
+          owner = os.environ.get("GITHUB_REPOSITORY", "koral-star/Agent-ai-security").split("/")[0]
+          repo  = os.environ.get("GITHUB_REPOSITORY", "koral-star/Agent-ai-security").split("/")[1]
+          pages_url = f"https://{owner}.github.io/{repo}"
+
+          # Convert markdown to Telegram-safe text (strip ## headers, keep bold **)
+          text = brief
+          text = re.sub(r'^#{1,3} ', '', text, flags=re.MULTILINE)   # remove # headers
+          text = re.sub(r'\*\*(.+?)\*\*', r'*\1*', text)             # **bold** → *bold*
+          text = re.sub(r'\[(.+?)\]\((.+?)\)', r'\1: \2', text)      # [text](url) → text: url
+          text = text[:3800]  # Telegram 4096 char limit
+
+          text += f"\n\n📊 Full presentation: {pages_url}"
+
+          payload = json.dumps({
+              "chat_id": chat_id,
+              "text": text,
+              "parse_mode": "Markdown",
+              "disable_web_page_preview": True
+          }).encode()
+
+          req = urllib.request.Request(
+              f"https://api.telegram.org/bot{token}/sendMessage",
+              data=payload,
+              headers={"Content-Type": "application/json"}
+          )
+          try:
+              with urllib.request.urlopen(req) as r:
+                  result = json.loads(r.read())
+                  print(f"Telegram: {'sent ✅' if result.get('ok') else result}")
+          except Exception as e:
+              print(f"Telegram error: {e}")
+          PYEOF
+
       - name: Create GitHub Issue with morning brief
         uses: actions/github-script@v7
         with:
