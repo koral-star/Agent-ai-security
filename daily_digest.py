@@ -42,6 +42,7 @@ Low priority: general AI product news, events, conferences, non-security topics.
 # ── Sources ───────────────────────────────────────────────────────────────────
 
 SOURCES = {
+    # ── Research Papers ───────────────────────────────────────────────────────
     "arXiv — AI Security": {
         "url": "https://export.arxiv.org/api/query?search_query=all:prompt+injection+OR+LLM+security+OR+agentic+AI+security+OR+RAG+security+OR+adversarial+LLM&sortBy=submittedDate&sortOrder=descending&max_results=8",
         "type": "arxiv_api",
@@ -52,10 +53,80 @@ SOURCES = {
         "type": "arxiv_api",
         "icon": "🤖",
     },
+    # ── Hands-on Research Blogs ───────────────────────────────────────────────
+    "Simon Willison": {
+        "url": "https://simonwillison.net/atom/everything/",
+        "type": "rss",
+        "icon": "🔍",
+        "fallback": "https://simonwillison.net",
+    },
+    "Embrace The Red": {
+        "url": "https://embracethered.com/blog/index.xml",
+        "type": "rss",
+        "icon": "🎯",
+        "fallback": "https://embracethered.com/blog",
+    },
+    "Lakera AI": {
+        "url": "https://www.lakera.ai/blog/rss.xml",
+        "type": "rss",
+        "icon": "🛡️",
+        "fallback": "https://www.lakera.ai/blog",
+    },
+    "Invariant Labs": {
+        "url": "https://invariantlabs.ai/blog",
+        "type": "html",
+        "icon": "🔬",
+    },
+    "Hidden Layer Research": {
+        "url": "https://hiddenlayer.com/research/feed/",
+        "type": "rss",
+        "icon": "👁️",
+        "fallback": "https://hiddenlayer.com/research/",
+    },
+    "Protect AI": {
+        "url": "https://protectai.com/blog",
+        "type": "html",
+        "icon": "🔒",
+    },
+    "Trail of Bits": {
+        "url": "https://blog.trailofbits.com/feed/",
+        "type": "rss",
+        "icon": "⚗️",
+        "fallback": "https://blog.trailofbits.com",
+    },
+    # ── Standards & Frameworks ────────────────────────────────────────────────
+    "OWASP GenAI": {
+        "url": "https://genai.owasp.org",
+        "type": "html",
+        "icon": "📋",
+    },
+    "OWASP Agentic AI": {
+        "url": "https://owasp.org/www-project-agentic-ai-threats/",
+        "type": "html",
+        "icon": "🤖",
+    },
+    # ── Vendor Security Teams ─────────────────────────────────────────────────
+    "Microsoft Security Blog": {
+        "url": "https://www.microsoft.com/en-us/security/blog/feed/",
+        "type": "rss",
+        "icon": "🪟",
+        "fallback": "https://www.microsoft.com/en-us/security/blog/",
+    },
+    "Palo Alto Unit 42": {
+        "url": "https://unit42.paloaltonetworks.com/feed/",
+        "type": "rss",
+        "icon": "🔭",
+        "fallback": "https://unit42.paloaltonetworks.com",
+    },
+    "Wiz Research": {
+        "url": "https://www.wiz.io/blog/tag/research",
+        "type": "html",
+        "icon": "☁️",
+    },
     "Anthropic Safety": {
         "url": "https://www.anthropic.com/rss.xml",
         "type": "rss",
-        "icon": "🔬",
+        "icon": "🧬",
         "fallback": "https://www.anthropic.com/research",
     },
     "Google DeepMind": {
@@ -70,15 +141,17 @@ SOURCES = {
         "icon": "⚡",
         "fallback": "https://developer.nvidia.com/blog/tag/security/",
     },
-    "OWASP GenAI": {
-        "url": "https://genai.owasp.org",
-        "type": "html",
-        "icon": "🛡️",
-    },
+    # ── News & Aggregators ────────────────────────────────────────────────────
     "The Weather Report — AI": {
         "url": "https://theweatherreport.ai",
         "type": "html",
         "icon": "🌐",
+    },
+    "tl;dr sec": {
+        "url": "https://tldrsec.com/feed/",
+        "type": "rss",
+        "icon": "📰",
+        "fallback": "https://tldrsec.com",
     },
     "HackerNews — AI Security": {
         "url": "https://hn.algolia.com/api/v1/search?query=AI+security+LLM+prompt+injection&tags=story&hitsPerPage=10",
@@ -736,10 +809,72 @@ def build_ntfy_notifications(ranked_items, date):
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
+def discover_new_sources(flat_items, existing_sources):
+    """
+    Ask Claude to identify new AI security sources worth tracking
+    based on links and domains appearing in today's content.
+    Returns markdown string appended to the brief.
+    """
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not api_key or not flat_items:
+        return ""
+    try:
+        import anthropic
+        client = anthropic.Anthropic(api_key=api_key)
+
+        # Collect all links from today's items
+        links = [it.get("link", "") for it in flat_items if it.get("link")]
+        existing_domains = set()
+        for cfg in existing_sources.values():
+            try:
+                from urllib.parse import urlparse
+                existing_domains.add(urlparse(cfg["url"]).netloc)
+            except:
+                pass
+
+        links_text = "\n".join(links[:60])
+        existing_text = "\n".join(sorted(existing_domains))
+
+        prompt = f"""You are helping maintain an AI security intelligence feed for a Senior AI Security Architect.
+
+Currently tracked domains:
+{existing_text}
+
+Links appearing in today's content:
+{links_text}
+
+Identify up to 3 new domains/blogs NOT already tracked that:
+1. Focus on AI security, LLM attacks, agentic AI, MCP, RAG security, or ML security
+2. Publish technical content (not just news aggregation)
+3. Are credible sources (research labs, security companies, known researchers)
+
+For each suggestion return:
+- Name: short descriptive name
+- URL: the blog/research URL
+- RSS: RSS feed URL if you know it (or "unknown")
+- Why: one sentence why it's relevant to AI security practitioners
+
+If no new relevant sources found, return "NONE".
+Format as a simple markdown list."""
+
+        response = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=600,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        result = response.content[0].text.strip()
+        if result and result != "NONE":
+            return f"\n\n---\n## 🔎 New Sources Discovered Today\n{result}"
+        return ""
+    except Exception as e:
+        print(f"Source discovery error: {e}")
+        return ""
+
+
 def build_digest():
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    source_items = []   # [(source_name, icon, [items])]
-    flat_items = []     # all items flattened for Claude ranking
+    source_items = []
+    flat_items = []
     md_lines = [f"# AI Security Daily Digest — {today}\n"]
 
     for source_name, config in SOURCES.items():
@@ -760,6 +895,10 @@ def build_digest():
 
     print("Generating morning brief...")
     brief = generate_morning_brief(ranked_items, today)
+
+    print("Discovering new sources...")
+    new_sources = discover_new_sources(flat_items, SOURCES)
+    brief += new_sources
 
     html = build_html_presentation(source_items, ranked_items, today)
     ntfy = build_ntfy_notifications(ranked_items, today)
