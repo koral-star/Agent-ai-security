@@ -49,44 +49,89 @@ jobs:
       - name: Deploy presentation to GitHub Pages
         run: |
           DATE=$(date +'%Y-%m-%d')
+          REPO="${{ github.repository }}"
+          OWNER="${{ github.repository_owner }}"
+          REPO_NAME="${REPO#*/}"
+
+          # Enable Pages via API (creates if missing, safe to re-run)
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${REPO}/pages" \
+            -d '{"source":{"branch":"gh-pages","path":"/"}}' || true
+
+          # Build gh-pages content
           mkdir -p /tmp/pages
-          # Copy today's presentation as the main page
-          cp digests/$DATE.html /tmp/pages/index.html
-          cp digests/$DATE.html /tmp/pages/$DATE.html
-          # Generate a simple archive index
-          echo "<html><head><meta charset='UTF-8'><title>AI Security Digests</title></head><body style='font-family:sans-serif;max-width:600px;margin:40px auto;'>" > /tmp/pages/archive.html
-          echo "<h2>🔐 AI Security Digest Archive</h2><ul>" >> /tmp/pages/archive.html
+
+          # Copy all past digests
           for f in digests/*.html; do
-            fname=$(basename $f .html)
-            echo "<li><a href='$fname.html'>$fname</a></li>" >> /tmp/pages/archive.html
-            cp $f /tmp/pages/$fname.html 2>/dev/null || true
+            fname=$(basename "$f")
+            cp "$f" "/tmp/pages/$fname"
           done
+
+          # Today's digest = index
+          cp "digests/$DATE.html" /tmp/pages/index.html
+
+          # Archive page listing all digests
+          cat > /tmp/pages/archive.html << 'ARCHEOF'
+          <!DOCTYPE html>
+          <html><head><meta charset="UTF-8">
+          <title>AI Security Digest — Koral Shimoni</title>
+          <style>
+            body{font-family:'Segoe UI',Arial,sans-serif;background:#0f2d48;color:#e8f0f7;max-width:700px;margin:60px auto;padding:0 24px;}
+            h1{font-size:28px;color:#5bc8f5;margin-bottom:8px;}
+            p{color:#7090a0;margin-bottom:32px;}
+            ul{list-style:none;padding:0;}
+            li{margin-bottom:12px;}
+            a{color:#5bc8f5;text-decoration:none;font-size:18px;font-weight:600;}
+            a:hover{text-decoration:underline;}
+          </style>
+          </head><body>
+          <h1>🔐 AI Security Digest</h1>
+          <p>Koral Shimoni — Daily AI security intelligence</p>
+          <ul>
+          ARCHEOF
+
+          # Add each digest as a link (newest first)
+          for f in $(ls digests/*.html 2>/dev/null | grep -v "_" | sort -r); do
+            fname=$(basename "$f" .html)
+            echo "<li><a href='${fname}.html'>${fname}</a></li>" >> /tmp/pages/archive.html
+          done
+
           echo "</ul></body></html>" >> /tmp/pages/archive.html
+
           # Push to gh-pages branch
           cd /tmp/pages
           git init
           git config user.name "AI Security Digest Bot"
           git config user.email "digest-bot@koral-shimoni.ai"
           git add .
-          git commit -m "Digest $DATE"
-          git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:gh-pages
+          git commit -m "Deploy digest $DATE"
+          git push --force \
+            "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" \
+            HEAD:gh-pages
 
       - name: Send push notifications via ntfy.sh
         run: |
           DATE=$(date +'%Y-%m-%d')
-          PAGES_URL="https://koral-star.github.io/Agent-ai-security"
+          OWNER="${{ github.repository_owner }}"
+          REPO_NAME="${{ github.repository }}"
+          REPO_NAME="${REPO_NAME#*/}"
+          PAGES_URL="https://${OWNER}.github.io/${REPO_NAME}"
+
           COUNT=$(jq length /tmp/ntfy_notifications.json)
           for i in $(seq 0 $((COUNT - 1))); do
             TITLE=$(jq -r ".[$i].title" /tmp/ntfy_notifications.json)
             BODY=$(jq -r ".[$i].body" /tmp/ntfy_notifications.json)
-            FULL_BODY="$BODY
+            FULL_BODY="${BODY}
 
-📊 Full presentation: $PAGES_URL"
+📊 Open full presentation: ${PAGES_URL}"
             curl -s \
               -H "Title: $TITLE" \
               -H "Priority: high" \
               -H "Tags: lock" \
-              -H "Click: $PAGES_URL" \
+              -H "Click: ${PAGES_URL}" \
               -d "$FULL_BODY" \
               https://ntfy.sh/koral-shimoni-ai-security-2026
             sleep 2
@@ -99,8 +144,10 @@ jobs:
             const fs = require('fs');
             const brief = fs.readFileSync('/tmp/brief.md', 'utf8');
             const date = '${{ steps.digest.outputs.date }}';
-            const pagesUrl = 'https://koral-star.github.io/Agent-ai-security';
-            const body = brief + `\n\n---\n📊 [View full presentation](${pagesUrl}) · [Archive](${pagesUrl}/archive.html)`;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const pagesUrl = `https://${owner}.github.io/${repo}`;
+            const body = brief + `\n\n---\n📊 [Open Presentation](${pagesUrl}) · [Archive](${pagesUrl}/archive.html)`;
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
