@@ -7,16 +7,14 @@
 
 ## 1. Open Questions
 
-> Based on the full design: Decision 1 (new Keycloak, selected), Decision 2 (App Push MFA, selected), and the complete mermaid sequence diagram. Questions build on top of the existing authentication security requirements.
-
 ---
 
 ### Phase 1 — Discovery
 
-1. The MCP server returns a `401 + WWW-Authenticate` before authentication is even attempted — is this 401 response itself rate-limited to prevent it being used as a DoS amplifier?
-2. Who has the ability to modify the `/.well-known/oauth-protected-resource` document, and is that change controlled and audited? A change to `authorization_servers` would silently redirect all ChatGPT logins to a different server.
-3. The discovery document exposes `auth.onezerbank.com` as the authorization server — has DNSSEC been configured on `onezerbank.com` to prevent subdomain takeover?
-4. If the `authorization_servers` value needs to be changed in an emergency (e.g., Keycloak key compromise), what is the rotation procedure and how quickly can it propagate to ChatGPT?
+1. Is the `401 + WWW-Authenticate` response rate-limited, or can it be used to DoS the discovery flow before authentication happens?
+2. Who can change the content of `/.well-known/oauth-protected-resource`? Modifying `authorization_servers` silently reroutes all ChatGPT logins.
+3. Is DNSSEC configured on `onezerbank.com`? Without it, `auth.onezerbank.com` is exposed to subdomain takeover.
+4. If we need to urgently rotate the `authorization_servers` value, what is the process and how fast does the change reach ChatGPT?
 
 ---
 
@@ -24,44 +22,44 @@
 
 **New Keycloak (Decision 1)**
 
-5. The selected architecture adds a new Keycloak instance that the team has no prior experience with, and requires custom plugin development — who is responsible for security-reviewing those plugins before they go to production?
-6. Who has admin access to the new Keycloak instance, and is that access logged and audited separately from application logs?
-7. The new Keycloak connects to IDM, which connects to the existing Keycloak holding all customer credentials — if the new Keycloak instance is compromised, what is the blast radius on the existing production Keycloak?
-8. The IDM change to allow a separate ChatGPT session alongside the mobile session breaks the existing "one session per user" invariant — can a compromised ChatGPT session be used to affect a customer's active mobile banking session?
+5. Who does the security review on the Keycloak custom plugins before they ship?
+6. Who has admin access to the new Keycloak instance, and is that logged?
+7. New Keycloak → IDM → existing Keycloak: if the new instance is compromised, can the attacker reach the existing Keycloak with all customer credentials?
+8. We're breaking the "one session per user" rule to allow a ChatGPT session alongside mobile. Can a stolen ChatGPT token affect the customer's active mobile session?
 
-**Login Flow — IDM endpoints**
+**Login Flow — IDM Endpoints**
 
-9. `/v1/external-auth/resolve-phone` — does this endpoint return a different response for a registered vs. unregistered phone number? A distinct error here would allow an attacker to enumerate which phone numbers belong to One Zero customers.
-10. The diagram shows SMS OTP (`/otp/prepare (SMS)`) but the selected MFA option is App Push (Option 3) — is SMS the fallback or the current state? If SMS is the fallback, has the SIM-swap risk been formally accepted?
-11. `/v1/external-auth/otp/verify` — how many incorrect attempts are allowed before the account is locked? Is there rate limiting per phone number in addition to per source IP?
-12. The App Push MFA requires IDM and Mobile to build new Push OTP functionality for web login (listed as a con in the design) — until that is built, what MFA method is in use, and has it been approved by security?
-13. If the internal call from Keycloak to `/v1/external-auth/validate-password` times out or fails silently, does the OAuth flow fail safely or could it proceed with incomplete password verification?
-14. The authorization code is redirected to `chatgpt.com` — how are redirect URIs validated: exact match only, or prefix/wildcard? Who controls the registered redirect URI list and who can add to it?
+9. Does `/resolve-phone` behave differently for registered vs. unknown numbers? That would allow phone number enumeration.
+10. The diagram shows SMS OTP but Option 3 (App Push) was selected. Is SMS the fallback? If so, has the SIM-swap risk been formally accepted?
+11. How many wrong codes does `/otp/verify` allow before lockout? Is there per-phone rate limiting, or only per-IP?
+12. App Push requires new development in IDM and Mobile — it's listed as a con. What MFA is actually running today, and has security signed off on it?
+13. If `/validate-password` times out on the Keycloak→IDM call, does the login fail or continue? A silent failure here would let someone in without a verified password.
+14. How are redirect URIs validated — exact match or prefix/wildcard? Who controls the allowlist and who can add to it?
 
 ---
 
 ### Phase 3 — Ask Ella
 
-15. The MCP server extracts `customerId` from the JWT — is this value passed as-is to the Ella GraphQL call `{customerId, message}`, and is it possible for the ChatGPT request body to override or inject a different `customerId` at any point between the MCP server and Ella?
-16. Only `{question text}` is shown being sent to PromptGuard — what exactly is included in "question text"? Is it strictly the user's chat input, or could it include Ella's previous response, customer context, or financial data? Financial data sent to AWS Bedrock leaves One Zero's infrastructure.
-17. When PromptGuard returns `BLOCK`, the MCP server returns a generic error — is the block decision logged with `customerId`, timestamp, and the rule that matched, for security monitoring and fraud detection?
-18. If PromptGuard is unavailable (AWS outage or timeout), does the MCP server fail closed (block the request) or fail open (forward it to Ella anyway)? This decision is not defined in the current security requirements.
-19. Ella "calls banking tools" as part of generating the answer — which tools can Ella invoke when called through ChatGPT? Is access strictly read-only, or can it trigger write operations such as transfers, payments, or account changes?
-20. The response `{text: "Balance: 41,568 ILS", followUps: [...]}` contains real financial data — is this response logged anywhere between Ella and ChatGPT? If so, who has access to those logs and what is the retention policy?
-21. The `followUps` field in Ella's response — are these pre-defined safe suggestions, or can their content be influenced by user input in a way that could facilitate a secondary prompt injection?
+15. `customerId` comes from the JWT. Can anything in the ChatGPT request body override it before it reaches Ella?
+16. What exactly goes to PromptGuard — just the user's question, or also Ella context and financial data? Anything beyond the raw question that goes to AWS needs scoping.
+17. When PromptGuard blocks a request, is that logged with the `customerId` and the matched rule? We need this for monitoring and fraud investigation.
+18. When PromptGuard is down — fail open or fail closed? This isn't covered in the current requirements.
+19. Which Ella tools are callable through ChatGPT? Read-only, or can it trigger transfers and payments?
+20. Is the Ella response logged anywhere between Ella and ChatGPT? If yes, who has access and for how long?
+21. The `followUps` in Ella's response — are they hardcoded suggestions or can user input shape them? That's a secondary injection surface.
 
 ---
 
-### Cross-Cutting — Full Design
+### Cross-Cutting
 
-22. The existing security requirement #5 (IP restriction to identify ChatGPT) is listed in the design — OpenAI does not publish fixed IP addresses. Has it been acknowledged that this control is unreliable and cannot replace token validation?
-23. The existing audit log requirement covers authentication events only (biometric approval, Keycloak logs) — are there equivalent tamper-evident logs for every MCP tool call in Phase 3, including the PromptGuard verdict and Ella response status?
-24. The design has no customer opt-in mechanism — is the ChatGPT integration disabled by default and only activated when a customer explicitly enables it?
-25. The design has no customer-facing revocation — can a customer disable ChatGPT's access to their banking data at any time from within the One Zero app?
-26. Ella's response (containing data such as "Balance: 41,568 ILS") flows through OpenAI's infrastructure — has Legal and Compliance approved this under GDPR, PSD2, and Israeli banking regulations?
-27. Has OpenAI's data retention policy been reviewed — how long does OpenAI store customer financial data submitted through ChatGPT?
-28. The design spans three separate teams (Keycloak, IDM, MCP/Ella) — who is the single security owner responsible for the end-to-end security of the full integration, and who is accountable if a cross-team gap is exploited?
-29. If OpenAI discloses a breach involving One Zero customer financial data, is there an incident response plan that includes the ability to immediately revoke all tokens issued by the new Keycloak instance across all customers?
+22. IP restriction (requirement #5) won't work — OpenAI has no fixed IP range. Has this been acknowledged?
+23. Current audit logs cover login events. Are there equivalent logs for Phase 3: tool calls, PromptGuard verdicts, Ella response status?
+24. Is the ChatGPT feature off by default? Does a customer need to actively turn it on?
+25. Can a customer revoke ChatGPT access from the app without calling support?
+26. Ella responses with real account data flow through OpenAI infrastructure. Has Compliance signed off under GDPR, PSD2, and local banking regulations?
+27. Has anyone reviewed how long OpenAI retains data sent through API calls?
+28. Three teams own this (Keycloak, IDM, MCP/Ella). Who is the single security owner for the end-to-end flow?
+29. If OpenAI gets breached and customer data is involved, can we immediately revoke all tokens from the new Keycloak instance?
 
 ---
 
