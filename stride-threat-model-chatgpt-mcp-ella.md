@@ -77,67 +77,71 @@
 
 ### Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  PHASE 1 — DISCOVERY                                                 │
-│                                                                      │
-│  [ChatGPT] ──(public HTTPS)──> [/.well-known/oauth-protected-       │
-│                                  resource]  (mcp.onezerbank.com)    │
-│            ──(public HTTPS)──> [/.well-known/openid-configuration] │
-│                                  (auth.onezerbank.com)              │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+sequenceDiagram
+    participant ChatGPT as ChatGPT Backend
+    participant Browser as User's Browser
+    participant MCP as MCP External Server<br/>(mcp.onezerbank.com)
+    participant KC as KeyCloak External<br/>(auth.onezerbank.com)
+    participant IDM as Identity Service
+    participant PromptGuard as AWS Prompt Guard<br/>(Bedrock Guardrails)
+    participant Ella as Auto-Banker<br/>(Ella)
 
-┌─────────────────────────────────────────────────────────────────────┐
-│  PHASE 2 — OAUTH 2.1 / PKCE LOGIN                                   │
-│                                                                      │
-│  [Browser Popup] ──(public HTTPS)──> [OAuth 2.1 Server]            │
-│                                        (auth.onezerbank.com)        │
-│                                           │                         │
-│                                    (internal mTLS)                  │
-│                                           │                         │
-│                                      [IDM Service]                  │
-│                                      /resolve-phone                 │
-│                                      /validate-password             │
-│                                      /otp-prepare                   │
-│                                      /otp-verify                    │
-│                                           │                         │
-│                                    (internal mTLS)                  │
-│                                           │                         │
-│                                       [Keycloak]                    │
-│                                   (issues auth code                 │
-│                                    + JWT via /token)                │
-│                                           │                         │
-│                             ←── auth code + JWT (customerId) ───    │
-│  [ChatGPT] ←── JWT ─────────────────────────────────────────────── │
-└─────────────────────────────────────────────────────────────────────┘
+    Note over ChatGPT,Ella: PHASE 1: Discovery
+    ChatGPT->>MCP: POST /mcp (no token)
+    MCP-->>ChatGPT: 401 + WWW-Authenticate
+    ChatGPT->>MCP: GET /.well-known/oauth-protected-resource
+    MCP-->>ChatGPT: {authorization_servers: [auth.onezerbank.com]}
+    ChatGPT->>KC: GET /.well-known/openid-configuration
+    KC-->>ChatGPT: {authorization_endpoint, token_endpoint}
 
-┌─────────────────────────────────────────────────────────────────────┐
-│  PHASE 3 — ASK ELLA (MCP TOOL CALL)                                 │
-│                                                                      │
-│  [ChatGPT] ──(Bearer JWT)──> [MCP Server] (mcp.onezerbank.com)     │
-│                                    │                                │
-│                             JWT validation                          │
-│                             (sig, iss, aud, exp, nbf, scope)       │
-│                             extract customerId                      │
-│                             rate limit check                        │
-│                                    │                                │
-│                           (internal call)                           │
-│                                    │                                │
-│                            [PromptGuard]                            │
-│                          (AWS Bedrock Guardrails)                   │
-│                          ALLOW / DENY                               │
-│                                    │                                │
-│                         if ALLOW ──┘                                │
-│                                    │                                │
-│                           (internal GraphQL)                        │
-│                                    │                                │
-│                          [Ella Auto-Banker]                         │
-│                          chatMessage(customerId, message)           │
-│                                    │                                │
-│                          response ◄┘                                │
-│                                    │                                │
-│  [ChatGPT] ◄── response ──────────┘                                │
-└─────────────────────────────────────────────────────────────────────┘
+    Note over ChatGPT,Ella: PHASE 2: OAuth Login (browser popup)
+    ChatGPT->>Browser: Open popup
+    Browser->>KC: GET /authorize?code_challenge=...&scope=ella:chat
+    KC-->>Browser: Login form (phone + password)
+    Browser->>KC: Submit phone + password
+
+    KC->>IDM: POST /v1/external-auth/resolve-phone
+    IDM-->>KC: {username, userId, customerId}
+    KC->>IDM: POST /v1/external-auth/validate-password
+    IDM-->>KC: {valid: true}
+    KC->>IDM: POST /v1/external-auth/otp/prepare (SMS)
+    IDM-->>KC: {otpContext}
+
+    KC-->>Browser: OTP form
+    Note over Browser: User receives SMS
+    Browser->>KC: Submit OTP code
+
+    KC->>IDM: POST /v1/external-auth/otp/verify
+    IDM-->>KC: {verified: true}
+
+    KC-->>Browser: Redirect to chatgpt.com?code=AUTH_CODE
+    Browser-->>ChatGPT: Authorization code
+
+    ChatGPT->>KC: POST /token (code + code_verifier)
+    KC-->>ChatGPT: {access_token: JWT with customerId}
+
+    Note over ChatGPT,Ella: PHASE 3: Ask Ella
+    ChatGPT->>MCP: POST /mcp (Bearer token)<br/>{method: tools/call, name: ask_ella,<br/>question: "what is my balance?"}
+
+    Note over MCP: Validate JWT (sig, iss, aud, exp, scope)<br/>Extract customerId<br/>Rate limit check
+
+    MCP->>PromptGuard: POST /guardrail (AWS Bedrock Guardrails)<br/>{question text}
+    Note over PromptGuard: Check for prompt injection,<br/>jailbreak, harmful content
+    PromptGuard-->>MCP: {action: ALLOW} or {action: BLOCK}
+
+    alt Prompt blocked
+        MCP-->>ChatGPT: {content: "I can't process that request.", isError: true}
+    else Prompt allowed
+        MCP->>Ella: GraphQL chatMessage<br/>{customerId, message}
+    end
+
+    Note over Ella: Fetch personal data<br/>Call banking tools<br/>Generate answer<br/>Moderate response
+
+    Ella-->>MCP: {text: "Balance: 41,568 ILS", followUps: [...]}
+    MCP-->>ChatGPT: {content: [{text: "Balance: 41,568 ILS"}]}
+
+    Note over ChatGPT: Display answer to user
 ```
 
 ### Trust Boundaries
