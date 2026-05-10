@@ -904,7 +904,18 @@ def build_digest():
     ntfy = build_ntfy_notifications(ranked_items, today)
     return today, "\n".join(md_lines), html, ntfy, brief
 
+def load_dotenv() -> None:
+    env_file = Path(__file__).parent / ".env"
+    if env_file.exists():
+        for line in env_file.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, _, value = line.partition("=")
+                os.environ.setdefault(key.strip(), value.strip())
+
+
 if __name__ == "__main__":
+    load_dotenv()
     print("Building AI Security Daily Digest...")
     today, md_content, html_content, ntfy_notifications, brief = build_digest()
 

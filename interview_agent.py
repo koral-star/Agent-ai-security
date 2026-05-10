@@ -104,7 +104,18 @@ def print_banner(resume_loaded: bool, study_plan_loaded: bool, digests_count: in
     print("  Type 'quit' to exit.\n")
 
 
+def load_dotenv() -> None:
+    env_file = Path(__file__).parent / ".env"
+    if env_file.exists():
+        for line in env_file.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, _, value = line.partition("=")
+                os.environ.setdefault(key.strip(), value.strip())
+
+
 def main() -> None:
+    load_dotenv()
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         print("ERROR: ANTHROPIC_API_KEY environment variable not set.")
