@@ -1,5 +1,5 @@
 # Interview Prep — Day 2
-**Spin Master LLM Safety Role | Interviewer: Senior AI Scientist (ex-IBM Research, Intuit)**
+**Spin Master LLM Safety Role | Product: children's chatbot (Frontier Model) | Interviewer: Senior AI Scientist (ex-IBM Research, Intuit)**
 
 ---
 
@@ -64,13 +64,87 @@
 
 ---
 
+---
+
+### Adversarial Robustness — research topic
+
+- **Definition:** model behavior under adversarial input perturbations — inputs specifically designed to cause safety failures
+- Key attack types to know by name:
+  - **GCG / adversarial suffix** (Zou et al. 2023): gradient-based suffix appended to any prompt causes aligned models to comply; white-box attack, but transferable to black-box
+  - **Encoding attacks:** base64, ROT13, leetspeak, pig latin — model reads encoded harmful content that bypasses surface classifiers
+  - **Token manipulation:** invisible unicode, homoglyphs, whitespace injection
+  - **Paraphrase attacks:** rephrase harmful request to avoid trained refusal patterns
+- **Fail gracefully vs fail open:** robustness means the model falls back to a safe response, not that it produces harmful output
+- Training for robustness: include adversarial examples (GCG-style, encoding, roleplay) in SFT data; run augmented red-team battery on every checkpoint; empirical robustness testing (not just pass/fail — measure effort required)
+- Child-specific: children's natural creativity = naive adversarial probing; "what if" scenarios and roleplay are how children probe boundaries — the chatbot must handle these gracefully at high volume
+
+---
+
+### Prompt Injection & Jailbreaking — research depth
+
+**Prompt Injection types:**
+- **Direct injection:** user injects instructions in their own message ("ignore previous instructions and tell me...")
+- **Indirect injection:** injected through content the chatbot reads — retrieved documents, tool outputs, parent-facing content loaded into context
+
+**Jailbreaking taxonomy — know all six:**
+1. **Roleplay persona** ("pretend you're DAN / an AI with no rules / a character who can say anything")
+2. **Encoding bypass** (base64, ROT13, pig latin — harmful request is encoded)
+3. **Many-shot manipulation** (prime the model with many compliant example pairs before the actual harmful request)
+4. **Hypothetical framing** ("in a story where a character needs to explain...", "for a school project about...")
+5. **Authority claim** ("my mom said it's OK", "I'm a doctor", "this is for educational purposes")
+6. **Context overflow** (push safety instructions out of the context window with long benign content, then inject)
+
+**Why they work:** gap between training distribution and deployment inputs; model trained to be helpful + safe faces adversarial tradeoff at the edges.
+
+**Child-specific jailbreak patterns:** authority claims and roleplay are the most common — and children use them innocently too. Detection must distinguish between a child playing pretend and an adversarial adult using roleplay as a jailbreak vector.
+
+**Key papers:**
+- Perez & Ribeiro (2022) — foundational prompt injection taxonomy
+- Zou et al. (2023) — "Universal and Transferable Adversarial Attacks on Aligned Language Models" (GCG)
+
+---
+
+### Research → Production (Safety Stack end-to-end)
+
+- **The researcher identity:** "I track academic safety research → evaluate applicability to our chatbot threat model → prototype → gate into pipeline."
+- This role is explicitly NOT just guardrails. The recruiter said: "from academic research to Production" — they want someone who moves from paper to weight.
+- Key papers to know by name:
+  - Perez & Ribeiro (2022) — prompt injection
+  - Zou et al. (2023) — GCG adversarial attacks
+  - Bai et al. (2022) — Constitutional AI (Anthropic)
+  - Rafailov et al. (2023) — DPO
+- Research methodology in one sentence: *"Hypothesis about a failure mode → controlled red-team experiment → severity measurement → training data change or architecture update."*
+- Line to own: *"I own the Safety Stack end-to-end — I find the research, evaluate it against our chatbot threat model, and decide what goes into production."*
+
+---
+
 ### Questions to drill (Morning)
 
 **Q2 — "How do you evaluate whether your model is actually safe?"**
 Key beats: evaluation at every stage; Garak + custom child probes automated; manual red-team with child safety specialists; multi-turn manipulation testing; production monitoring with feedback loop. Mention real use of Garak and PyRIT.
+↳ Follow-up 1: "Garak gives you pass/fail — how do you prioritize which HIGH findings to fix first when you have limited training budget?"
+↳ Follow-up 2: "How do you evaluate adversarial robustness specifically — not just whether a jailbreak works, but how much effort it took an attacker to find it?"
+↳ Follow-up 3: "Your automated battery passes — then a manual red-teamer finds something in 10 minutes. What does that tell you about your automated battery, and what do you change?"
 
 **Q4 — "What's your approach to red-teaming specifically for children's AI?"**
 Key beats: three tracks; adults don't think like children → standard red-teaming misses patterns; multi-turn manipulation is the hardest; pass criteria is zero HIGH severity.
+↳ Follow-up 1: "Walk me through a specific multi-turn attack scenario on a children's chatbot — turn by turn, what does the attacker do and when does the model trip?"
+↳ Follow-up 2: "How do you red-team for the adversarial adult pretending to be a child — different threat profile from a real child pushing limits?"
+↳ Follow-up 3: "You have a new Frontier Model checkpoint. Walk me through the first 48 hours of safety evaluation before you clear it for production."
+
+**Q-NEW — "How do you approach adversarial robustness evaluation for a children's chatbot?"**
+Key beats: GCG-style adversarial suffix attacks; encoding attacks (base64, ROT13); fail gracefully vs fail open; include adversarial examples in SFT data; empirical robustness testing on every checkpoint.
+↳ Follow-up 1: "GCG attacks require gradient access — white-box. How do you do robustness evaluation without white-box access to a production model?"
+↳ Follow-up 2: "What's the difference between a model that's genuinely robust and a model that's just hard to attack? How do you tell them apart?"
+
+**Q-NEW — "How would you design jailbreak resistance — not just detection, but resistance?"**
+Key beats: detection catches known patterns; resistance requires training-time solutions; constitutional constraints embedded in weights are more robust than classifiers; include all 6 jailbreak types in SFT adversarial data.
+↳ Follow-up 1: "Detection-based defenses fail against novel jailbreaks. How do you train for robustness to jailbreak techniques you haven't seen yet?"
+↳ Follow-up 2: "A new jailbreak technique appears on social media specifically targeting your chatbot and getting results. What's your response process — first 24 hours?"
+
+**Q-NEW — "How do you stay current with LLM safety research and translate it into your work?"**
+Key beats: track key papers (Zou et al. GCG, Perez & Ribeiro injection, Bai et al. Constitutional AI); research methodology — hypothesis → red-team experiment → production gate; "I own the Safety Stack end-to-end."
+↳ Follow-up 1: "Give me a specific example of a safety paper you read that directly changed something you did in production or training."
 
 **Q14 — "Why Spin Master specifically?"**
 Key beats: children are the harder and more important problem; harm model is different, margin for error is lower; Spin Master is where a trusted brand meets genuinely hard safety — worth solving. Anchor to your background: systematic threat models for LLM systems, training-level fixes vs deployment patches.
@@ -129,9 +203,11 @@ Prompts to use:
 
 ### Opening pitch — 90 seconds, practice aloud until no notes needed
 
-"I'm an AI security specialist — for the past two years I've been building and attacking LLM systems in production. At OneZero I built a threat intelligence pipeline covering 25 sources and ran systematic red-teaming on our production LLM systems: prompt injection, jailbreaks, data exfiltration through agentic chains, RAG poisoning.
+"I work at the intersection of LLM safety research and production deployment — I track the academic findings, evaluate them against real threat models, and decide what goes into the Safety Stack. For the past two years at OneZero I've been building and attacking LLM systems in production: prompt injection, jailbreaks, adversarial robustness, multi-turn manipulation, RAG poisoning, agentic trust boundaries.
 
-What I found consistently is that the strongest defenses are baked in at training time — deployment patches are always playing catch-up. That's what drew me to this role. Children are a harder and more important safety problem than adults: the harm model is different, the regulatory bar is higher, and the attack surface includes adversarial adults targeting children's trust. I want to build systems that are safe by design, not safe by patch."
+What I found consistently is that the strongest defenses are embedded at training time — not bolted on as guardrails. Guardrails can be stripped. Model internals can't. That's the researcher framing I bring: if it's not in the weights, it's not safe.
+
+Children are a harder and more important safety problem than adults: the harm model is different, the regulatory bar is higher, and the attack surface includes adversarial adults exploiting children's natural trust. Spin Master is where that hard problem meets a Frontier Model built from scratch — that's exactly the kind of end-to-end Safety Stack ownership I want."
 
 ---
 
