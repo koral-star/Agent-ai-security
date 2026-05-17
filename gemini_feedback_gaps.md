@@ -35,7 +35,23 @@ Key line: "Age-persona spoofing is a real attack vector — we can't trust self-
 
 ## TOPIC 2: Chatbot Defense Architecture
 
-*(Add gaps here after completing Topic 2 with Gemini)*
+**All Strong — 3 expert polish points to add**
+
+**Polish 1 — Threshold Calibration**
+When describing the session risk score, add how you decide when to trigger a reset:
+"We tune the threshold based on the specific persona of the bot — a bot for 6-year-olds
+trips the reset earlier than one for teenagers."
+
+**Polish 2 — Semantic Similarity / Embeddings**
+In multi-turn attacks, add this detection layer:
+"We use embeddings to check if the conversation drift is moving toward a forbidden cluster
+— like PII or harmful content — even when individual words look innocent."
+This shows you think beyond keyword matching to vector-space threat detection.
+
+**Polish 3 — Proactive Red-Teaming of the scoring system**
+Don't wait for the feedback loop — add:
+"We proactively red-team the risk scoring system itself — simulating multi-turn attacks
+in staging to verify the score actually trips before it reaches the harmful request."
 
 ---
 
