@@ -1,5 +1,5 @@
 # KORAL SHIMONI
-**Senior AI Security Architect & Manager**
+**Senior AI Security Architect & Application Security Manager**
 
 +972-50-5292860 | koral.s930720@gmail.com | [LinkedIn Profile](https://linkedin.com/in/koral-shimoni)
 
@@ -17,7 +17,7 @@ I bring hands-on experience with OWASP LLM Top 10, MITRE ATLAS, and NIST AI RMF 
 
 ## PROFESSIONAL EXPERIENCE
 
-### Application Security and AI Security Manager
+### Senior AI Security Architect & Application Security Manager
 **One Zero Bank** | 2022 – Present
 
 **AI Security Program (Established from Scratch)**
@@ -93,7 +93,7 @@ I bring hands-on experience with OWASP LLM Top 10, MITRE ATLAS, and NIST AI RMF 
 - Threat modeling and security design review
 - Secure SDLC / DevSecOps (IaC, CI/CD pipeline security, ArgoCD)
 - Bug bounty program management and 3rd-party penetration testing coordination
-- Tools: Burp Suite, Postman, SoapUI, Wireshark, Sysinternals Suite, Snyk, Cider, CyCode
+- Tools: Wiz,Snyk, Cider, CyCode,Burp Suite, Postman, SoapUI, Wireshark, Sysinternals Suite,
 
 ### Cloud & Infrastructure Security
 - AWS, Azure — cloud security architecture and posture management
@@ -130,5 +130,3 @@ HIT – Holon Institute of Technology | 2014 – 2017
 - English — Professional proficiency
 
 ---
-
-*Last updated: March 2026*
